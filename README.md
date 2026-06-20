@@ -1,49 +1,52 @@
-# ⚡ LocalStack Studio
+# LocalStack OS 🪟 (Project Darkside)
 
-**LocalStack Studio** คือ Web Application ส่วนตัวสำหรับทีมที่สร้างขึ้นมาเพื่อดูข้อมูล S3 และ SQS ที่รันอยู่บน LocalStack ในเครื่อง (Bypass การ Login และข้อจำกัดของ LocalStack Web App) 
+LocalStack OS is a retro-styled (Windows XP) developer dashboard designed to provide a unified, intuitive GUI for interacting with local development tools, AWS LocalStack services, and PostgreSQL databases. It replaces clunky CLI commands and complex DB management tools with an easy-to-use, unified interface.
 
-มาพร้อมกับ UI ที่สวยงาม (Modern Glassmorphism) และรองรับ Dark/Light Mode อัตโนมัติ
+## 🌟 Key Features
 
----
+### 1. S3 Explorer 📁
+A full-featured file manager for LocalStack S3 buckets.
+- **Bucket Management:** Create and delete buckets.
+- **Folder Navigation:** Browse through "folders" (prefixes) intuitively.
+- **Object Management:** Upload, download, and delete files.
+- **Storage Classes:** View and modify S3 storage classes (STANDARD, GLACIER, INTELLIGENT_TIERING, etc.) instantly.
 
-## 🛠 Prerequisites (สิ่งที่ต้องมีในเครื่องก่อนรัน)
-1. **Node.js** (เวอร์ชัน 18 ขึ้นไป) - ถ้าใช้โปรเจกต์ของบริษัทได้ แปลว่ามีอยู่แล้วชัวร์!
-2. **Docker / LocalStack** - ต้องสตาร์ทคอนเทนเนอร์ LocalStack ทิ้งไว้ที่พอร์ต `4566` (รันจาก docker-compose ของโปรเจกต์หลักได้เลย)
+### 2. SQS Manager 📨
+A unified message queue interface for LocalStack SQS.
+- **Queue Overview:** View all standard and Dead Letter Queues (DLQ) along with their approximate message counts.
+- **Message Inspection:** Receive and read raw message payloads in a clean JSON viewer.
+- **Queue Operations:** Purge entire queues or delete specific messages individually.
+- **DLQ Redrive:** One-click feature to move messages from a Dead Letter Queue back to its main queue for reprocessing.
 
----
+### 3. CSV to Seed Wizard 🪄
+An intelligent database seeding tool that bridges the gap between CSV templates and database insertions.
+- **Database Introspection:** Connects to PostgreSQL to read schemas, table names, column types, and ENUM values in real-time.
+- **Smart Mapping:** Automatically maps CSV column headers to database columns.
+- **Spreadsheet Editor:** Built-in Excel-like grid to preview, edit, and validate data before exporting (including ENUM dropdown validation).
+- **SQL Generation:** Exports data not just as JSON, but as fully idempotent `INSERT ... ON CONFLICT DO UPDATE` (UPSERT) SQL scripts ready to be executed against any environment.
 
-## 🚀 วิธีติดตั้งและรันใช้งาน (สำหรับคนในทีม)
+### 4. Database Diff Wizard ⚖️ (Redgate Clone)
+A powerful visual comparison tool to synchronize schemas and data between two database environments (e.g., UAT/SIT vs Local).
+- **Schema Diff:** Highlights missing tables, new tables, missing columns, and data-type mismatches between Source and Target schemas.
+- **Data Diff:** Compares actual row values (up to 1,000 rows) using Primary Keys to detect identical, inserted, deleted, or modified rows.
+- **Auto SQL Migration:** Dynamically generates precise `CREATE TABLE`, `ALTER TABLE`, `INSERT`, `UPDATE`, and `DELETE` SQL scripts to instantly sync the Target database with the Source.
 
-ง่ายมาก! ใช้เวลาแค่ 1 นาทีเท่านั้น:
+## 🛠 Tech Stack
+- **Framework:** Next.js 14 (App Router)
+- **Styling:** Custom CSS (Windows XP aesthetics using `xp.css` principles)
+- **AWS SDK:** `@aws-sdk/client-s3`, `@aws-sdk/client-sqs`
+- **Database:** `pg` (Node Postgres Client)
+- **Icons:** Native emojis & Retro UI patterns
 
-**1. Clone / Copy โฟลเดอร์โปรเจกต์นี้**
-เอาโฟลเดอร์ `localstack-studio` นี้ไปวางไว้ที่ไหนก็ได้ในเครื่องตัวเอง
+## 🚀 Getting Started
 
-**2. เปิด Terminal แล้ว CD เข้าไปที่โฟลเดอร์นี้**
-```bash
-cd /path/to/localstack-studio
-```
-
-**3. ติดตั้ง Dependencies**
-```bash
-npm install
-```
-
-**4. รัน Server ขึ้นมาเลย!**
-```bash
-npm run dev
-```
-
-**5. ใช้งานได้เลย 🎉**
-เปิดเบราว์เซอร์แล้วเข้าไปที่: **[http://localhost:3000](http://localhost:3000)** (หรือพอร์ตอื่นๆ ที่มันแสดงใน Terminal ตอนรันเสร็จ)
-
----
-
-## 💡 ฟีเจอร์ที่มีในตอนนี้
-- 🪣 **S3 Explorer**: ดูรายการ Buckets ทั้งหมด, เช็คไฟล์ข้างใน, ดูขนาดไฟล์, เช็ค Storage Class (เช่น STANDARD, GLACIER_IR) และสามารถกดคลิกเพื่อ **Download** ดูเนื้อหาไฟล์ได้ทันที!
-- 📨 **SQS Explorer**: ดูคิวทั้งหมดที่มีในระบบ พร้อมสรุปตัวเลขแบบเรียลไทม์ว่ามี Message ที่กำลังรอทำงานอยู่เท่าไหร่ (Visible) และ Message ที่กำลัง Process อยู่เท่าไหร่ (In Flight)
-
----
-
-## 🎨 ทริคเล็กๆ น้อยๆ
-- ลองเปลี่ยนธีม Mac หรือ Windows ของคุณเป็น **Dark Mode** 🌙 หรือ **Light Mode** ☀️ ดูสิ! หน้าเว็บนี้จะเปลี่ยนโทนสีตามระบบของคุณแบบ Real-time ทันทีโดยไม่ต้องกดรีเฟรช!
+1. Ensure you have Node.js and LocalStack running.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open [http://localhost:3333](http://localhost:3333) in your browser to experience the magic!
