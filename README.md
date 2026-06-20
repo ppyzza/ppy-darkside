@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ LocalStack Studio
 
-## Getting Started
+**LocalStack Studio** คือ Web Application ส่วนตัวสำหรับทีมที่สร้างขึ้นมาเพื่อดูข้อมูล S3 และ SQS ที่รันอยู่บน LocalStack ในเครื่อง (Bypass การ Login และข้อจำกัดของ LocalStack Web App) 
 
-First, run the development server:
+มาพร้อมกับ UI ที่สวยงาม (Modern Glassmorphism) และรองรับ Dark/Light Mode อัตโนมัติ
 
+---
+
+## 🛠 Prerequisites (สิ่งที่ต้องมีในเครื่องก่อนรัน)
+1. **Node.js** (เวอร์ชัน 18 ขึ้นไป) - ถ้าใช้โปรเจกต์ของบริษัทได้ แปลว่ามีอยู่แล้วชัวร์!
+2. **Docker / LocalStack** - ต้องสตาร์ทคอนเทนเนอร์ LocalStack ทิ้งไว้ที่พอร์ต `4566` (รันจาก docker-compose ของโปรเจกต์หลักได้เลย)
+
+---
+
+## 🚀 วิธีติดตั้งและรันใช้งาน (สำหรับคนในทีม)
+
+ง่ายมาก! ใช้เวลาแค่ 1 นาทีเท่านั้น:
+
+**1. Clone / Copy โฟลเดอร์โปรเจกต์นี้**
+เอาโฟลเดอร์ `localstack-studio` นี้ไปวางไว้ที่ไหนก็ได้ในเครื่องตัวเอง
+
+**2. เปิด Terminal แล้ว CD เข้าไปที่โฟลเดอร์นี้**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd /path/to/localstack-studio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**3. ติดตั้ง Dependencies**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**4. รัน Server ขึ้นมาเลย!**
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**5. ใช้งานได้เลย 🎉**
+เปิดเบราว์เซอร์แล้วเข้าไปที่: **[http://localhost:3000](http://localhost:3000)** (หรือพอร์ตอื่นๆ ที่มันแสดงใน Terminal ตอนรันเสร็จ)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 💡 ฟีเจอร์ที่มีในตอนนี้
+- 🪣 **S3 Explorer**: ดูรายการ Buckets ทั้งหมด, เช็คไฟล์ข้างใน, ดูขนาดไฟล์, เช็ค Storage Class (เช่น STANDARD, GLACIER_IR) และสามารถกดคลิกเพื่อ **Download** ดูเนื้อหาไฟล์ได้ทันที!
+- 📨 **SQS Explorer**: ดูคิวทั้งหมดที่มีในระบบ พร้อมสรุปตัวเลขแบบเรียลไทม์ว่ามี Message ที่กำลังรอทำงานอยู่เท่าไหร่ (Visible) และ Message ที่กำลัง Process อยู่เท่าไหร่ (In Flight)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 ทริคเล็กๆ น้อยๆ
+- ลองเปลี่ยนธีม Mac หรือ Windows ของคุณเป็น **Dark Mode** 🌙 หรือ **Light Mode** ☀️ ดูสิ! หน้าเว็บนี้จะเปลี่ยนโทนสีตามระบบของคุณแบบ Real-time ทันทีโดยไม่ต้องกดรีเฟรช!
