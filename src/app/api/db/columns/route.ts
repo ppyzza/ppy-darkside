@@ -3,38 +3,53 @@ import { Client } from 'pg';
 
 export async function POST(req: Request) {
   try {
-    const { connectionString, schema = 'public', table } = await req.json();
+    const { connectionString, dbConfig, schema = 'public', table } = await req.json();
     
-    if (!connectionString || !table) {
-      return NextResponse.json({ success: false, error: 'connectionString and table are required' }, { status: 400 });
+    if ((!connectionString && !dbConfig) || !table) {
+      return NextResponse.json({ success: false, error: 'connection details and table are required' }, { status: 400 });
     }
 
-    const client = new Client({ connectionString });
+    const clientConfig: any = dbConfig ? { ...dbConfig } : { connectionString };
+    if (clientConfig.ssl) {
+      clientConfig.ssl = { rejectUnauthorized: false };
+    }
+    const client = new Client(clientConfig);
     await client.connect();
 
     const query = `
-      SELECT c.column_name, c.data_type, c.is_nullable, c.udt_name,
-      (
-        SELECT array_agg(e.enumlabel)
-        FROM pg_enum e
-        JOIN pg_type t ON e.enumtypid = t.oid
-        WHERE t.typname = c.udt_name
-      ) as enum_values,
-      (
-        SELECT TRUE
-        FROM information_schema.key_column_usage kcu
-        JOIN information_schema.table_constraints tc 
-          ON kcu.constraint_name = tc.constraint_name 
-          AND tc.table_schema = kcu.table_schema
-          AND tc.constraint_type = 'PRIMARY KEY'
-        WHERE kcu.table_schema = c.table_schema 
-          AND kcu.table_name = c.table_name 
-          AND kcu.column_name = c.column_name
-        LIMIT 1
-      ) as is_primary_key
-      FROM information_schema.columns c
-      WHERE c.table_schema = $1 AND c.table_name = $2
-      ORDER BY c.ordinal_position;
+      SELECT
+          a.attname AS column_name,
+          pg_catalog.format_type(a.atttypid, a.atttypmod) AS data_type,
+          NOT a.attnotnull AS is_nullable,
+          (
+              SELECT array_agg(e.enumlabel)
+              FROM pg_catalog.pg_enum e
+              WHERE e.enumtypid = a.atttypid
+          ) AS enum_values,
+          (
+              SELECT true
+              FROM pg_catalog.pg_index i
+              WHERE i.indrelid = a.attrelid AND i.indisprimary AND a.attnum = ANY(i.indkey)
+          ) AS is_primary_key,
+          (
+              SELECT json_build_object(
+                  'table', cl.relname,
+                  'column', fa.attname
+              )
+              FROM pg_catalog.pg_constraint c
+              JOIN pg_catalog.pg_class cl ON cl.oid = c.confrelid
+              JOIN pg_catalog.pg_attribute fa ON fa.attrelid = c.confrelid AND fa.attnum = c.confkey[1]
+              WHERE c.conrelid = a.attrelid
+              AND c.contype = 'f'
+              AND a.attnum = ANY(c.conkey)
+              LIMIT 1
+          ) AS foreign_key
+      FROM pg_catalog.pg_attribute a
+      JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE lower(n.nspname) = lower($1) AND lower(c.relname) = lower($2)
+      AND a.attnum > 0 AND NOT a.attisdropped
+      ORDER BY a.attnum;
     `;
     
     const result = await client.query(query, [schema, table]);

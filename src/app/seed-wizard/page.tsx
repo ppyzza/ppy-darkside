@@ -127,7 +127,16 @@ export default function SeedWizardPage() {
   const [step, setStep] = useState(1);
 
   // DB Connection State
+  const [connectionMode, setConnectionMode] = useState<'string' | 'fields'>('fields');
   const [connectionString, setConnectionString] = useState('postgres://postgres:mysecretpassword@localhost:5432/hr_revamp');
+  const [dbConfig, setDbConfig] = useState({
+    host: 'localhost',
+    port: 5432,
+    database: 'hr_revamp',
+    user: 'postgres',
+    password: 'mysecretpassword',
+    ssl: false
+  });
   const [schema, setSchema] = useState('corehr');
   const [connecting, setConnecting] = useState(false);
   const [dbError, setDbError] = useState('');
@@ -135,14 +144,17 @@ export default function SeedWizardPage() {
 
   // Selection State
   const [selectedTable, setSelectedTable] = useState('');
+  const [manualTable, setManualTable] = useState(false);
   const [columns, setColumns] = useState<any[]>([]);
   const [fetchingCols, setFetchingCols] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
 
   // CSV State
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [csvData, setCsvData] = useState<any[]>([]);
   const [editorPage, setEditorPage] = useState(0);
+  const [validationErrors, setValidationErrors] = useState<Record<number, Record<string, string>>>({});
 
   // Mapping State (CSV Header -> DB Column)
   const [mapping, setMapping] = useState<Record<string, string>>({});
@@ -204,7 +216,11 @@ export default function SeedWizardPage() {
       const res = await fetch('/api/db/tables', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ connectionString, schema })
+        body: JSON.stringify({ 
+          connectionString: connectionMode === 'string' ? connectionString : undefined,
+          dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+          schema 
+        })
       });
       const data = await res.json();
       if (data.success) {
@@ -221,26 +237,89 @@ export default function SeedWizardPage() {
     }
   };
 
-  const handleTableSelect = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const table = e.target.value;
-    setSelectedTable(table);
-    if (!table) return;
+  const fetchColumnsForTable = async (tableToFetch: string) => {
+    if (!tableToFetch) return;
 
     setFetchingCols(true);
     try {
       const res = await fetch('/api/db/columns', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ connectionString, schema, table })
+        body: JSON.stringify({ 
+          connectionString: connectionMode === 'string' ? connectionString : undefined,
+          dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+          schema, 
+          table: tableToFetch 
+        })
       });
       const data = await res.json();
       if (data.success) {
         setColumns(data.columns);
+      } else {
+        alert('Error fetching columns: ' + data.error);
       }
     } catch (err: any) {
       alert('Error fetching columns: ' + err.message);
     } finally {
       setFetchingCols(false);
+    }
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const table = e.target.value;
+    setSelectedTable(table);
+    if (table) fetchColumnsForTable(table);
+  };
+
+  const loadExistingData = async () => {
+    if (!selectedTable) {
+      alert('Please select a table first.');
+      return;
+    }
+    if (columns.length === 0) {
+      alert('Please load columns first.');
+      return;
+    }
+    setLoadingData(true);
+    try {
+      const res = await fetch('/api/db/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          connectionString: connectionMode === 'string' ? connectionString : undefined,
+          dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+          schema, 
+          table: selectedTable,
+          limit: 100
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.data.length === 0) {
+          const headers = columns.map(c => c.column_name);
+          setCsvHeaders(headers);
+          setCsvData([]);
+          alert('Table is empty. Empty grid created with DB columns.');
+        } else {
+          const headers = Object.keys(data.data[0]);
+          setCsvHeaders(headers);
+          const formattedData = data.data.map((row: any) => {
+            const newRow: any = {};
+            for (const key in row) {
+               newRow[key] = row[key] !== null && typeof row[key] === 'object' ? JSON.stringify(row[key]) : String(row[key] ?? '');
+            }
+            return newRow;
+          });
+          setCsvData(formattedData);
+          setEditorPage(0);
+        }
+      } else {
+        alert('Error loading data: ' + data.error);
+      }
+    } catch (err: any) {
+      alert('Failed to load data: ' + err.message);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -399,15 +478,61 @@ export default function SeedWizardPage() {
                 <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Connect to PostgreSQL</h3>
                 <p style={{ fontSize: '11px', marginBottom: '16px' }}>Provide connection details to introspect your Core HR database.</p>
                 
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Connection String:</label>
-                  <input type="text" style={{ width: '100%' }} value={connectionString} onChange={e => setConnectionString(e.target.value)} />
+                <div style={{ marginBottom: '16px', display: 'flex', gap: '16px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <input type="radio" name="connMode" checked={connectionMode === 'fields'} onChange={() => setConnectionMode('fields')} /> Mamori / Detailed Config
+                  </label>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <input type="radio" name="connMode" checked={connectionMode === 'string'} onChange={() => setConnectionMode('string')} /> Connection String
+                  </label>
                 </div>
+
+                {connectionMode === 'string' ? (
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Connection String:</label>
+                    <input type="text" style={{ width: '100%' }} value={connectionString} onChange={e => setConnectionString(e.target.value)} />
+                  </div>
+                ) : (
+                  <div style={{ marginBottom: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Host:</label>
+                      <input type="text" style={{ width: '100%' }} value={dbConfig.host} onChange={e => setDbConfig({...dbConfig, host: e.target.value})} placeholder="cdac.cpf.co.th" />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Port:</label>
+                      <input type="number" style={{ width: '100%' }} value={dbConfig.port} onChange={e => setDbConfig({...dbConfig, port: Number(e.target.value)})} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Database:</label>
+                      <input type="text" style={{ width: '100%' }} value={dbConfig.database} onChange={e => setDbConfig({...dbConfig, database: e.target.value})} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Schema:</label>
+                      <input type="text" style={{ width: '100%' }} value={schema} onChange={e => setSchema(e.target.value)} />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Username (with @ROLE for Mamori):</label>
+                      <input type="text" style={{ width: '100%' }} value={dbConfig.user} onChange={e => setDbConfig({...dbConfig, user: e.target.value})} placeholder="username@WLGPCOREPRD_COREHR_AS" />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Password:</label>
+                      <input type="password" style={{ width: '100%' }} value={dbConfig.password} onChange={e => setDbConfig({...dbConfig, password: e.target.value})} />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1', marginTop: '8px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <input type="checkbox" checked={dbConfig.ssl} onChange={e => setDbConfig({...dbConfig, ssl: e.target.checked})} />
+                        Enable SSL (Required for Mamori / Cloud DB)
+                      </label>
+                    </div>
+                  </div>
+                )}
                 
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Schema:</label>
-                  <input type="text" style={{ width: '100%' }} value={schema} onChange={e => setSchema(e.target.value)} />
-                </div>
+                {connectionMode === 'string' && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Schema:</label>
+                    <input type="text" style={{ width: '100%' }} value={schema} onChange={e => setSchema(e.target.value)} />
+                  </div>
+                )}
 
                 {dbError && <div style={{ color: 'red', fontWeight: 'bold', marginBottom: '16px' }}>Error: {dbError}</div>}
 
@@ -424,12 +549,34 @@ export default function SeedWizardPage() {
                 <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Select Table & Upload Data</h3>
                 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold' }}>Target Database Table:</label>
-                  <select style={{ width: '100%' }} value={selectedTable} onChange={handleTableSelect}>
-                    <option value="">-- Select a Table --</option>
-                    {tables.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  {fetchingCols && <div style={{ fontSize: '11px', color: 'blue' }}>Fetching columns...</div>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Target Database Table:</label>
+                    <label style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <input type="checkbox" checked={manualTable} onChange={e => setManualTable(e.target.checked)} />
+                      Type Manually
+                    </label>
+                  </div>
+                  
+                  {(!manualTable && tables.length > 0) ? (
+                    <select style={{ width: '100%' }} value={selectedTable} onChange={handleSelectChange}>
+                      <option value="">-- Select a Table --</option>
+                      {tables.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  ) : (
+                    <div>
+                      <input 
+                        type="text"
+                        style={{ width: 'calc(100% - 90px)', display: 'inline-block' }} 
+                        value={selectedTable} 
+                        onChange={e => setSelectedTable(e.target.value)}
+                        placeholder="e.g. employee"
+                      />
+                      <button className="btn" style={{ width: '80px', marginLeft: '8px' }} onClick={() => fetchColumnsForTable(selectedTable)} disabled={!selectedTable || fetchingCols}>
+                        Load
+                      </button>
+                    </div>
+                  )}
+                  {fetchingCols && <div style={{ fontSize: '11px', color: 'blue', marginTop: '4px' }}>Fetching columns...</div>}
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
@@ -452,10 +599,22 @@ export default function SeedWizardPage() {
                     )}
                   </div>
                   
-                  {/* Right Box: Upload */}
-                  <div style={{ flex: 1, background: '#FFFFFF', padding: '16px', border: '1px solid #ACA899' }}>
-                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>📂 Upload Local CSV File:</label>
-                    <input type="file" accept=".csv" onChange={handleFileUpload} style={{ width: '100%', fontSize: '11px' }} />
+                  {/* Right Box: Upload or Load DB */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ background: '#FFFFFF', padding: '16px', border: '1px solid #ACA899' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>📂 Upload Local CSV File:</label>
+                      <input type="file" accept=".csv" onChange={handleFileUpload} style={{ width: '100%', fontSize: '11px' }} />
+                    </div>
+
+                    <div style={{ background: '#E5F5E5', padding: '16px', border: '1px solid #ACA899', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px', textAlign: 'center' }}>⏬ Load Existing DB Data:</label>
+                      <button className="btn" onClick={loadExistingData} disabled={loadingData || !selectedTable || columns.length === 0} style={{ padding: '4px 16px', fontWeight: 'bold' }}>
+                        {loadingData ? 'Loading...' : 'Fetch Top 100 Rows'}
+                      </button>
+                      <div style={{ fontSize: '10px', color: '#666', marginTop: '8px', textAlign: 'center' }}>
+                        Pull data to edit directly.
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -528,6 +687,13 @@ export default function SeedWizardPage() {
                                   }
                                   const isEnum = dbCol && dbCol.enum_values && Array.isArray(dbCol.enum_values) && dbCol.enum_values.length > 0;
 
+                                  const isUuidCol = dbCol && (dbCol.data_type === 'uuid' || dbCol.column_name.toLowerCase().includes('uuid'));
+                                  const isInvalidUuid = isUuidCol && row[h] && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(row[h].trim());
+
+                                  const fkError = validationErrors[rIdx]?.[h];
+                                  const hasError = isInvalidUuid || !!fkError;
+                                  const errorMessage = isInvalidUuid ? 'Invalid UUID format' : (fkError || '');
+
                                   return (
                                     <td key={h} style={{ border: '1px solid #ACA899', padding: 0 }}>
                                       {isEnum ? (
@@ -558,10 +724,19 @@ export default function SeedWizardPage() {
                                         <input 
                                           type="text" 
                                           value={row[h] || ''} 
+                                          title={errorMessage}
                                           onChange={(e) => {
                                             const newData = [...csvData];
                                             newData[rIdx] = { ...newData[rIdx], [h]: e.target.value };
                                             setCsvData(newData);
+                                            // clear error on change
+                                            if (validationErrors[rIdx]?.[h]) {
+                                              setValidationErrors(prev => {
+                                                const rowErrs = { ...prev[rIdx] };
+                                                delete rowErrs[h];
+                                                return { ...prev, [rIdx]: rowErrs };
+                                              });
+                                            }
                                           }}
                                           style={{ 
                                             width: '100%', 
@@ -569,11 +744,45 @@ export default function SeedWizardPage() {
                                             border: 'none', 
                                             padding: '4px', 
                                             fontSize: '11px',
-                                            background: 'transparent',
-                                            outline: 'none'
+                                            background: hasError ? '#FFEEEE' : 'transparent',
+                                            color: hasError ? 'red' : 'inherit',
+                                            outline: hasError ? '1px solid red' : 'none'
                                           }}
-                                          onFocus={e => e.target.style.background = '#FFFFE1'}
-                                          onBlur={e => e.target.style.background = 'transparent'}
+                                          onFocus={e => { if(!hasError) e.target.style.background = '#FFFFE1' }}
+                                          onBlur={async (e) => {
+                                            if (!hasError) e.target.style.background = 'transparent';
+                                            
+                                            // FK Validation
+                                            if (dbCol && dbCol.foreign_key && e.target.value && !isInvalidUuid) {
+                                              try {
+                                                const res = await fetch('/api/db/validate-exists', {
+                                                  method: 'POST',
+                                                  headers: { 'Content-Type': 'application/json' },
+                                                  body: JSON.stringify({
+                                                    connectionString: connectionMode === 'string' ? connectionString : undefined,
+                                                    dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+                                                    schema,
+                                                    table: dbCol.foreign_key.table,
+                                                    column: dbCol.foreign_key.column,
+                                                    value: e.target.value.trim()
+                                                  })
+                                                });
+                                                const data = await res.json();
+                                                setValidationErrors(prev => {
+                                                  const rowErrs = prev[rIdx] || {};
+                                                  if (data.success && !data.exists) {
+                                                    return { ...prev, [rIdx]: { ...rowErrs, [h]: `Record not found in ${dbCol.foreign_key.table}` } };
+                                                  } else {
+                                                    const newRowErrs = { ...rowErrs };
+                                                    delete newRowErrs[h];
+                                                    return { ...prev, [rIdx]: newRowErrs };
+                                                  }
+                                                });
+                                              } catch (err) {
+                                                console.error('Validation error', err);
+                                              }
+                                            }
+                                          }}
                                         />
                                       )}
                                     </td>

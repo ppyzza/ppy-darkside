@@ -3,21 +3,24 @@ import { Client } from 'pg';
 
 export async function POST(req: Request) {
   try {
-    const { connectionString, schema = 'public' } = await req.json();
+    const { connectionString, dbConfig, schema = 'public' } = await req.json();
     
-    if (!connectionString) {
-      return NextResponse.json({ success: false, error: 'connectionString is required' }, { status: 400 });
+    if (!connectionString && !dbConfig) {
+      return NextResponse.json({ success: false, error: 'connectionString or dbConfig is required' }, { status: 400 });
     }
 
-    const client = new Client({ connectionString });
+    const clientConfig: any = dbConfig ? { ...dbConfig } : { connectionString };
+    if (clientConfig.ssl) {
+      clientConfig.ssl = { rejectUnauthorized: false };
+    }
+    const client = new Client(clientConfig);
     await client.connect();
 
     const query = `
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = $1 
-      AND table_type = 'BASE TABLE'
-      ORDER BY table_name;
+      SELECT tablename AS table_name 
+      FROM pg_catalog.pg_tables 
+      WHERE lower(schemaname) = lower($1)
+      ORDER BY tablename;
     `;
     
     const result = await client.query(query, [schema]);
