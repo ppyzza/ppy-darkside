@@ -4,7 +4,7 @@ import { SQSClient } from '@aws-sdk/client-sqs';
 const localstackConfig = {
   region: 'ap-southeast-1',
   credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
-  endpoint: 'http://localhost:4566',
+  endpoint: process.env.LOCALSTACK_ENDPOINT || 'http://localhost:4566',
 };
 
 export const s3Client = new S3Client({

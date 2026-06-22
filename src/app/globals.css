@@ -185,6 +185,11 @@ tr:hover td {
   color: #FFFFFF;
 }
 
+.no-hover tr:hover td {
+  background: inherit;
+  color: inherit;
+}
+
 tr:hover td button {
   color: #000000; /* Keep button text black even on blue row */
 }

@@ -65,10 +65,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
 
               <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[+] Monitoring</div>
-                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px', opacity: 0.5 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ color: '#E5C365' }}>📁</span> Event Viewer</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ color: '#E5C365' }}>📁</span> Resource Monitor</div>
+                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[+] Intelligence</div>
+                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <Link href="/knowledge" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ color: '#E5C365' }}>🧠</span> Knowledge Graph
+                  </Link>
                 </div>
               </div>
 
@@ -81,8 +82,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Link href="/db-diff" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>⚖️</span> Database Diff Wizard
                   </Link>
+                  <Link href="/terragrunt" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ color: '#E5C365' }}>🌍</span> Terragrunt Inspector
+                  </Link>
                   <Link href="/utilities" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🧰</span> PowerToys
+                  </Link>
+                  <Link href="/sqs" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ color: '#E5C365' }}>🚀</span> SQS Simulator
                   </Link>
                 </div>
               </div>

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  localstack-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: localstack-studio
+    ports:
+      - "3333:3333"
+    environment:
+      # Use host.docker.internal to allow the container to communicate with LocalStack running on the host machine
+      - LOCALSTACK_ENDPOINT=http://host.docker.internal:4566
+    restart: unless-stopped
+    # Depending on the OS, host.docker.internal may need to be explicitly defined if not using Docker Desktop
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
