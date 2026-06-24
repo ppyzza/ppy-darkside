@@ -181,7 +181,7 @@ export default function SeedWizardPage() {
   const [entityFormDataList, setEntityFormDataList] = useState<any[]>([]);
   const [activeRecordIndex, setActiveRecordIndex] = useState<number | null>(null);
   const [activeRecordData, setActiveRecordData] = useState<any>({});
-  const [scanSummary, setScanSummary] = useState<{ depth0: string[], depth1: string[], depth2plus: string[] } | null>(null);
+  const [scanSummary, setScanSummary] = useState<Record<number, string[]> | null>(null);
 
   const [templates, setTemplates] = useState<{name: string, sizeKb: string}[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -228,18 +228,15 @@ export default function SeedWizardPage() {
       return result;
     };
 
-    const depth0: string[] = [];
-    const depth1: string[] = [];
-    const depth2plus: string[] = [];
+    const depthsMap: Record<number, string[]> = {};
 
     for (const ent of parsedEntities) {
       const d = getDepth(ent.className);
-      if (d === 0) depth0.push(ent.className);
-      else if (d === 1) depth1.push(ent.className);
-      else depth2plus.push(ent.className);
+      if (!depthsMap[d]) depthsMap[d] = [];
+      depthsMap[d].push(ent.className);
     }
 
-    setScanSummary({ depth0, depth1, depth2plus });
+    setScanSummary(depthsMap);
   };
 
   const scanEntities = async () => {
@@ -735,31 +732,36 @@ export default function SeedWizardPage() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <h4 style={{ margin: 0, fontSize: '12px' }}>Scan Summary (Join Depths)</h4>
                           <button className="btn" style={{ fontSize: '10px' }} onClick={() => {
-                            const md = `### Entity Join Depths\n\n**0 Joins (Standalone):**\n${scanSummary.depth0.map(x => `- ${x}`).join('\n')}\n\n**1 Join:**\n${scanSummary.depth1.map(x => `- ${x}`).join('\n')}\n\n**2+ Joins (Complex):**\n${scanSummary.depth2plus.map(x => `- ${x}`).join('\n')}\n`;
+                            let md = `### Entity Join Depths\n\n`;
+                            const maxDepth = Math.max(...Object.keys(scanSummary).map(Number));
+                            for (let i = 0; i <= maxDepth; i++) {
+                              if (scanSummary[i] && scanSummary[i].length > 0) {
+                                md += `**${i} Join${i !== 1 ? 's' : ''}${i === 0 ? ' (Standalone)' : ''}:**\n${scanSummary[i].map((x: string) => `- ${x}`).join('\n')}\n\n`;
+                              }
+                            }
                             navigator.clipboard.writeText(md);
                             alert('Copied to clipboard!');
                           }}>📋 Copy as Markdown</button>
                         </div>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginTop: '12px' }}>
-                          <div>
-                            <strong style={{ fontSize: '11px', color: '#006600' }}>0 Joins ({scanSummary.depth0.length})</strong>
-                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
-                              {scanSummary.depth0.map(x => <div key={x}>{x}</div>)}
-                            </div>
-                          </div>
-                          <div>
-                            <strong style={{ fontSize: '11px', color: '#B8860B' }}>1 Join ({scanSummary.depth1.length})</strong>
-                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
-                              {scanSummary.depth1.map(x => <div key={x}>{x}</div>)}
-                            </div>
-                          </div>
-                          <div>
-                            <strong style={{ fontSize: '11px', color: '#CC0000' }}>2+ Joins ({scanSummary.depth2plus.length})</strong>
-                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
-                              {scanSummary.depth2plus.map(x => <div key={x}>{x}</div>)}
-                            </div>
-                          </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '12px' }}>
+                          {Object.keys(scanSummary).map(Number).sort((a, b) => a - b).map(depth => {
+                            let titleColor = '#333';
+                            if (depth === 0) titleColor = '#006600';
+                            else if (depth === 1) titleColor = '#B8860B';
+                            else if (depth >= 2) titleColor = '#CC0000';
+
+                            return (
+                              <div key={depth}>
+                                <strong style={{ fontSize: '11px', color: titleColor }}>
+                                  {depth} Join{depth !== 1 ? 's' : ''} {depth === 0 ? '(Standalone)' : ''} ({scanSummary[depth].length})
+                                </strong>
+                                <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
+                                  {scanSummary[depth].map((x: string) => <div key={x}>{x}</div>)}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
