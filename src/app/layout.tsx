@@ -2,6 +2,7 @@ import './globals.css';
 import Link from 'next/link';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { ClientSidebar } from '@/components/ClientSidebar';
 
 export const metadata = {
   title: 'LocalStack OS',
@@ -40,72 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden', padding: '12px', gap: '12px' }}>
           
           {/* Sidebar */}
-          <aside style={{ width: '220px', display: 'flex', flexDirection: 'column' }} className="window-panel">
-            <div className="sidebar-header">
-              Dashboard
-            </div>
-            
-            <div style={{ flex: 1, padding: '8px', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', borderTop: 'none', overflowY: 'auto' }}>
-              
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Storage</div>
-                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>📁</span> S3 Explorer
-                  </Link>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Messaging</div>
-                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/sqs" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>📁</span> SQS Manager
-                  </Link>
-                  <Link href="#" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.5 }}>
-                    <span style={{ color: '#E5C365' }}>📁</span> SNS Topics
-                  </Link>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[+] Intelligence</div>
-                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/knowledge" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🧠</span> Knowledge Graph
-                  </Link>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Accessories</div>
-                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/seed-wizard" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🪄</span> CSV to Seed Wizard
-                  </Link>
-                  <Link href="/config-compare" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>⚙️</span> Config Checker
-                  </Link>
-                  <Link href="/tenant-compare" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🏢</span> Tenant Checker
-                  </Link>
-                  <Link href="/db-diff" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>⚖️</span> Database Diff Wizard
-                  </Link>
-                  <Link href="/terragrunt" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🌍</span> Terragrunt Inspector
-                  </Link>
-                  <Link href="/utilities" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🧰</span> PowerToys
-                  </Link>
-                  <Link href="/sqs" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ color: '#E5C365' }}>🚀</span> SQS Simulator
-                  </Link>
-                </div>
-              </div>
-
-            </div>
-          </aside>
+          <ClientSidebar />
 
           {/* Main Content Area */}
           <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
