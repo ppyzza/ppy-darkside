@@ -38,11 +38,25 @@ export default function S3Page() {
     'EXPRESS_ONEZONE'
   ];
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const fetchBuckets = () => {
+    setLoading(true);
     fetch('/api/s3')
       .then(res => res.json())
       .then(data => {
-        setBuckets(data);
+        if (data.error) {
+          setErrorMsg(data.error);
+          setBuckets([]);
+        } else {
+          setBuckets(data);
+          setErrorMsg(null);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        setErrorMsg(err.message);
+        setBuckets([]);
         setLoading(false);
       });
   };
@@ -336,7 +350,13 @@ export default function S3Page() {
                         </td>
                       </tr>
                     ))}
-                    {buckets.length === 0 && (
+                    {errorMsg && (
+                      <tr><td colSpan={4} style={{ padding: '16px 8px', textAlign: 'center', color: '#CC0000' }}>
+                        <div>⚠️ LocalStack is not running or S3 is not enabled.</div>
+                        <div style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8 }}>({errorMsg})</div>
+                      </td></tr>
+                    )}
+                    {buckets.length === 0 && !errorMsg && (
                       <tr><td colSpan={4} style={{ padding: '8px', textAlign: 'center' }}>No buckets found.</td></tr>
                     )}
                   </tbody>

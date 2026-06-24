@@ -82,6 +82,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Link href="/config-compare" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>⚙️</span> Config Checker
                   </Link>
+                  <Link href="/tenant-compare" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ color: '#E5C365' }}>🏢</span> Tenant Checker
+                  </Link>
                   <Link href="/db-diff" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>⚖️</span> Database Diff Wizard
                   </Link>
