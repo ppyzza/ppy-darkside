@@ -151,13 +151,70 @@ body {
   background: rgba(128, 128, 128, 0.2);
 }
 
-/* XP specific close button override */
+/* XP specific overrides */
+.sidebar-header {
+  background: var(--app-blue-dark);
+  color: white;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: var(--app-title-radius);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 [data-theme="xp"] .app-titlebar-btn.close-btn {
   background: #C44335;
   border: 1px solid white;
   border-radius: 3px;
   box-shadow: inset -1px -1px 2px rgba(0,0,0,0.3), inset 1px 1px 2px rgba(255,255,255,0.5);
 }
+
+/* DARKSIDE STRUCTURAL OVERRIDES */
+[data-theme="darkside"] .sidebar-header {
+  display: none; /* Hide the big blocky header */
+}
+[data-theme="darkside"] .app-titlebar {
+  background: var(--app-window-bg);
+  border-bottom: 1px solid var(--app-border);
+  padding: 12px 16px;
+}
+[data-theme="darkside"] .app-titlebar-buttons {
+  display: none; /* Modern web dashboards don't need fake OS buttons */
+}
+[data-theme="darkside"] .app-window {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* GLASSMORPHISM STRUCTURAL OVERRIDES (macOS aesthetic) */
+[data-theme="glass"] .sidebar-header {
+  display: none;
+}
+[data-theme="glass"] .app-titlebar {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  justify-content: center; /* Center the title */
+  position: relative;
+  padding: 12px;
+}
+[data-theme="glass"] .app-titlebar-buttons {
+  position: absolute;
+  left: 12px;
+  gap: 8px;
+}
+[data-theme="glass"] .app-titlebar-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  color: transparent; /* Hide X, _, square icons */
+  overflow: hidden;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+}
+[data-theme="glass"] .app-titlebar-btn:nth-child(1) { background: #ff5f56; } /* Close */
+[data-theme="glass"] .app-titlebar-btn:nth-child(2) { background: #ffbd2e; } /* Minimize */
+[data-theme="glass"] .app-titlebar-btn:nth-child(3) { background: #27c93f; } /* Maximize */
+[data-theme="glass"] .app-titlebar-btn:hover { color: rgba(0,0,0,0.5); font-size: 8px; font-weight: bold; }
+
 
 .app-content {
   padding: 12px;

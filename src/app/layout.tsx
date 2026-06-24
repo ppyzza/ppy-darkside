@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           {/* Sidebar */}
           <aside style={{ width: '220px', display: 'flex', flexDirection: 'column' }} className="window-panel">
-            <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', borderRadius: 'var(--app-title-radius)', borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
+            <div className="sidebar-header">
               Dashboard
             </div>
             
