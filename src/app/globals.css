@@ -330,12 +330,12 @@ tr:nth-child(even) td {
   background: rgba(128, 128, 128, 0.05);
 }
 
-tr:hover td {
+[data-theme="xp"] tr:hover td {
   background: var(--app-blue);
   color: #FFFFFF;
 }
 
-.no-hover tr:hover td {
+[data-theme="xp"] .no-hover tr:hover td {
   background: inherit;
   color: inherit;
 }
