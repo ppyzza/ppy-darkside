@@ -1,0 +1,43 @@
+import React from 'react';
+
+export interface UtilitiesProps {
+  activeTab: number;
+  setActiveTab: React.Dispatch<React.SetStateAction<number>>;
+  jwtInput: string;
+  setJwtInput: React.Dispatch<React.SetStateAction<string>>;
+  jwtHeader: string;
+  setJwtHeader: React.Dispatch<React.SetStateAction<string>>;
+  jwtPayload: string;
+  setJwtPayload: React.Dispatch<React.SetStateAction<string>>;
+  jwtError: string;
+  setJwtError: React.Dispatch<React.SetStateAction<string>>;
+  jsonInput: string;
+  setJsonInput: React.Dispatch<React.SetStateAction<string>>;
+  jsonOutput: string;
+  setJsonOutput: React.Dispatch<React.SetStateAction<string>>;
+  jsonError: string;
+  setJsonError: React.Dispatch<React.SetStateAction<string>>;
+  epochInput: string;
+  setEpochInput: React.Dispatch<React.SetStateAction<string>>;
+  epochOutput: string;
+  setEpochOutput: React.Dispatch<React.SetStateAction<string>>;
+  dateInput: string;
+  setDateInput: React.Dispatch<React.SetStateAction<string>>;
+  dateOutput: string;
+  setDateOutput: React.Dispatch<React.SetStateAction<string>>;
+  uuidOutput: string;
+  setUuidOutput: React.Dispatch<React.SetStateAction<string>>;
+  base64Raw: string;
+  setBase64Raw: React.Dispatch<React.SetStateAction<string>>;
+  base64Encoded: string;
+  setBase64Encoded: React.Dispatch<React.SetStateAction<string>>;
+  decodeJwt: () => void;
+  formatJson: () => void;
+  minifyJson: () => void;
+  convertEpoch: () => void;
+  convertDate: () => void;
+  generateUuid: () => void;
+  encodeBase64: () => void;
+  decodeBase64: () => void;
+  tabs: string[];
+}

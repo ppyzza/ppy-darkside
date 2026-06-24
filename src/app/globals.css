@@ -53,28 +53,28 @@
 /* Theme: Glassmorphism */
 [data-theme="glass"] {
   --app-font: 'Inter', sans-serif;
-  --app-bg: #e2e8f0;
-  --app-bg-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-  --app-panel: rgba(255, 255, 255, 0.4);
-  --app-window-bg: rgba(255, 255, 255, 0.6);
-  --app-border: rgba(255, 255, 255, 0.8);
+  --app-bg: #1e1e2f;
+  --app-bg-image: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
+  --app-panel: rgba(255, 255, 255, 0.05);
+  --app-window-bg: rgba(255, 255, 255, 0.08);
+  --app-border: rgba(255, 255, 255, 0.1);
   --app-blue: #6366f1;
-  --app-blue-dark: #4338ca;
+  --app-blue-dark: #818cf8;
   --app-success: #10b981;
   --app-warning: #f59e0b;
   --app-danger: #ef4444;
-  --app-text: #1e293b;
-  --app-text-muted: #64748b;
-  --app-title-gradient-start: rgba(255, 255, 255, 0.5);
-  --app-title-gradient-end: rgba(255, 255, 255, 0.3);
-  --app-title-text: #0f172a;
-  --app-window-border: rgba(255, 255, 255, 0.5);
+  --app-text: #ffffff;
+  --app-text-muted: #94a3b8;
+  --app-title-gradient-start: rgba(255, 255, 255, 0.1);
+  --app-title-gradient-end: rgba(255, 255, 255, 0.05);
+  --app-title-text: #ffffff;
+  --app-window-border: rgba(255, 255, 255, 0.1);
   --app-window-radius: 16px;
   --app-title-radius: 16px 16px 0 0;
-  --app-btn-bg: rgba(255, 255, 255, 0.7);
-  --app-btn-border: rgba(255, 255, 255, 0.9);
-  --app-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  --app-backdrop: blur(10px);
+  --app-btn-bg: rgba(255, 255, 255, 0.1);
+  --app-btn-border: rgba(255, 255, 255, 0.2);
+  --app-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --app-backdrop: blur(16px);
 }
 
 * {
@@ -393,3 +393,46 @@ tr:nth-child(even) td {
 .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
 .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Glassmorphism Overrides */
+[data-theme="glass"] th {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+[data-theme="glass"] td {
+  border: 1px solid rgba(255,255,255,0.05) !important;
+  color: #eee !important;
+}
+
+[data-theme="glass"] tr:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Darkside Overrides */
+[data-theme="darkside"] body {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+[data-theme="darkside"] th {
+  background: #1e1e1e !important;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+}
+
+[data-theme="darkside"] td {
+  border: 1px solid #333 !important;
+}
+
+[data-theme="darkside"] tr:hover {
+  background: #1a1a1a !important;
+}
