@@ -94,12 +94,12 @@ export default function ClientTenantCompare({
         )}
 
         {/* Top Controls */}
-        <div style={{ background: '#FFF', padding: '12px', border: '1px solid #7F9DB9', flexShrink: 0, display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ background: 'var(--app-window-bg)', padding: '12px', border: '1px solid var(--app-border)', flexShrink: 0, display: 'flex', gap: '12px', alignItems: 'center' }}>
           <label style={{ fontWeight: 'bold' }}>Upload CSV:</label>
           <input type="file" accept=".csv" onChange={handleFileUpload} />
         </div>
 
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', background: '#FFF', padding: '8px', border: '1px solid #7F9DB9', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', background: 'var(--app-window-bg)', padding: '8px', border: '1px solid var(--app-border)', flexShrink: 0 }}>
           <div><strong>Total CSV Records:</strong> {csvRows.length}</div>
           <div><strong>Total DB Records:</strong> {dbRows.length}</div>
           <div><strong>Matches:</strong> {comparison.filter(c => c.matchStatus === 'Match').length}</div>
@@ -107,7 +107,7 @@ export default function ClientTenantCompare({
           <div><strong>Missing in DB:</strong> {comparison.filter(c => c.matchStatus === 'Missing in DB').length}</div>
         </div>
 
-        <div style={{ flex: 1, overflow: 'auto', border: '1px solid #7F9DB9', background: '#FFF', minHeight: 0 }}>
+        <div style={{ flex: 1, overflow: 'auto', border: '1px solid var(--app-border)', background: 'var(--app-window-bg)', minHeight: 0 }}>
           <table>
             <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
               <tr>
@@ -128,7 +128,7 @@ export default function ClientTenantCompare({
                 } else if (row.matchStatus === 'Mismatch') {
                   style = { background: '#FFEEEE', borderColor: '#CC0000', color: '#CC0000' };
                 } else if (row.matchStatus === 'Missing in DB') {
-                  style = { background: '#FFF3E0', borderColor: '#E59700', color: '#B37600' };
+                  style = { background: 'var(--app-window-bg)3E0', borderColor: '#E59700', color: '#B37600' };
                 }
 
                 return (

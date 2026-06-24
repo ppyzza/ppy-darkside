@@ -16,11 +16,11 @@ function FolderNode({ name, node, pathSoFar, level, onSelect }: any) {
           paddingLeft: `${level * 16 + 8}px`, 
           fontSize: '11px', 
           fontWeight: 'bold', 
-          color: '#000',
+          color: 'var(--app-text)',
           cursor: 'pointer',
           userSelect: 'none'
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#E5F5E5'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         {expanded ? '📂' : '📁'} {name}
@@ -49,8 +49,8 @@ function FolderNode({ name, node, pathSoFar, level, onSelect }: any) {
                     padding: '2px 4px',
                     paddingLeft: `${(level + 1) * 16 + 24}px`
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#0A246A'; e.currentTarget.style.color = '#FFFFFF'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#000000'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--app-blue-dark)'; e.currentTarget.style.color = 'var(--app-window-bg)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--app-text)'; }}
                 >
                   <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📄 {key}</span>
                   <span style={{ color: '#888', marginLeft: '8px' }}>{item.sizeKb} KB</span>
@@ -109,8 +109,8 @@ function FolderTree({ templates, onSelect }: { templates: any[], onSelect: (name
                 padding: '2px 4px',
                 paddingLeft: `8px`
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#0A246A'; e.currentTarget.style.color = '#FFFFFF'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#000000'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--app-blue-dark)'; e.currentTarget.style.color = 'var(--app-window-bg)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--app-text)'; }}
             >
               <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📄 {key}</span>
               <span style={{ color: '#888', marginLeft: '8px' }}>{item.sizeKb} KB</span>
@@ -657,7 +657,7 @@ export default function SeedWizardPage() {
       <div className="app-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0 }}>
         
         {/* Mode Toggle */}
-        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div style={{ padding: '8px', borderBottom: '1px solid var(--app-border)', background: 'var(--app-bg)', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <span style={{ fontWeight: 'bold', fontSize: '11px' }}>Wizard Mode:</span>
           <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
             <input type="radio" name="wizardMode" checked={wizardMode === 'csv'} onChange={() => setWizardMode('csv')} />
@@ -673,7 +673,7 @@ export default function SeedWizardPage() {
         <div style={{ display: 'flex', flex: 1 }}>
           
           {/* Left Sidebar Steps */}
-          <div style={{ width: '150px', background: '#0A246A', color: 'white', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', fontWeight: 'bold' }}>
+          <div style={{ width: '150px', background: 'var(--app-blue-dark)', color: 'white', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', fontWeight: 'bold' }}>
             {wizardMode === 'csv' ? (
               <>
                 <div style={{ opacity: step === 1 ? 1 : 0.5 }}>1. DB Connection</div>
@@ -692,11 +692,11 @@ export default function SeedWizardPage() {
           </div>
 
           {/* Right Content Area */}
-          <div style={{ flex: 1, padding: '24px', background: '#ECE9D8', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, padding: '24px', background: 'var(--app-bg)', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
             
             {step === 1 && (
               <div>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid var(--app-border)', paddingBottom: '8px' }}>
                   {wizardMode === 'csv' ? 'Connect to PostgreSQL' : 'Database & Entity Setup'}
                 </h3>
                 <p style={{ fontSize: '11px', marginBottom: '16px' }}>
@@ -706,7 +706,7 @@ export default function SeedWizardPage() {
                 </p>
 
                 {wizardMode === 'entity' && (
-                  <div style={{ marginBottom: '24px', padding: '12px', background: '#FFF', border: '1px solid #ACA899' }}>
+                  <div style={{ marginBottom: '24px', padding: '12px', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)' }}>
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '4px' }}>TypeORM Entities Directory Path:</label>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input 
@@ -728,7 +728,7 @@ export default function SeedWizardPage() {
                     )}
                     
                     {scanSummary && (
-                      <div style={{ marginTop: '16px', background: '#F0F0F0', padding: '16px', border: '1px solid #ACA899' }}>
+                      <div style={{ marginTop: '16px', background: 'var(--app-panel)', padding: '16px', border: '1px solid var(--app-border)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <h4 style={{ margin: 0, fontSize: '12px' }}>Scan Summary (Join Depths)</h4>
                           <button className="btn" style={{ fontSize: '10px' }} onClick={() => {
@@ -756,7 +756,7 @@ export default function SeedWizardPage() {
                                 <strong style={{ fontSize: '11px', color: titleColor }}>
                                   {depth} Join{depth !== 1 ? 's' : ''} {depth === 0 ? '(Standalone)' : ''} ({scanSummary[depth].length})
                                 </strong>
-                                <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
+                                <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: 'var(--app-window-bg)', padding: '4px', border: '1px solid var(--app-border)' }}>
                                   {scanSummary[depth].map((x: string) => <div key={x}>{x}</div>)}
                                 </div>
                               </div>
@@ -826,7 +826,7 @@ export default function SeedWizardPage() {
 
                 {dbError && <div style={{ color: 'red', fontWeight: 'bold', marginBottom: '16px' }}>Error: {dbError}</div>}
 
-                <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)' }}>
                   <button className="btn btn-primary" onClick={handleConnect} disabled={connecting || (wizardMode === 'entity' && entities.length === 0)}>
                     Next {'>'}
                   </button>
@@ -836,7 +836,7 @@ export default function SeedWizardPage() {
 
             {step === 2 && (
               <div>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid var(--app-border)', paddingBottom: '8px' }}>
                   {wizardMode === 'csv' ? 'Select Table & Upload Data' : 'Select Root Entity'}
                 </h3>
 
@@ -883,7 +883,7 @@ export default function SeedWizardPage() {
                       )}
                     </select>
 
-                    <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', marginTop: '24px' }}>
+                    <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)', marginTop: '24px' }}>
                       <button className="btn" onClick={() => setStep(1)}>{'< Back'}</button>
                       <button className="btn btn-primary" onClick={() => {
                         setEntityFormDataList([]);
@@ -930,12 +930,12 @@ export default function SeedWizardPage() {
 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
                   {/* Left Box: Templates */}
-                  <div style={{ flex: 1, background: '#FFFFFF', padding: '16px', border: '1px solid #ACA899' }}>
+                  <div style={{ flex: 1, background: 'var(--app-window-bg)', padding: '16px', border: '1px solid var(--app-border)' }}>
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>🗂️ Browse Built-in Templates:</label>
                     {loadingTemplates ? (
                       <div style={{ fontSize: '11px', color: 'blue' }}>Loading templates...</div>
                     ) : (
-                      <div style={{ height: '300px', overflowY: 'auto', border: '1px solid #EBEBEB', padding: '4px' }}>
+                      <div style={{ height: '300px', overflowY: 'auto', border: '1px solid var(--app-panel)', padding: '4px' }}>
                         {templates.length === 0 ? (
                           <div style={{ padding: '8px', fontSize: '11px', color: '#666' }}>No templates found</div>
                         ) : (
@@ -950,12 +950,12 @@ export default function SeedWizardPage() {
                   
                   {/* Right Box: Upload or Load DB */}
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ background: '#FFFFFF', padding: '16px', border: '1px solid #ACA899' }}>
+                    <div style={{ background: 'var(--app-window-bg)', padding: '16px', border: '1px solid var(--app-border)' }}>
                       <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>📂 Upload Local CSV File:</label>
                       <input type="file" accept=".csv" onChange={handleFileUpload} style={{ width: '100%', fontSize: '11px' }} />
                     </div>
 
-                    <div style={{ background: '#E5F5E5', padding: '16px', border: '1px solid #ACA899', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '16px', border: '1px solid var(--app-border)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                       <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px', textAlign: 'center' }}>⏬ Load Existing DB Data:</label>
                       <button className="btn" onClick={loadExistingData} disabled={loadingData || !selectedTable || columns.length === 0} style={{ padding: '4px 16px', fontWeight: 'bold' }}>
                         {loadingData ? 'Loading...' : 'Fetch Top 100 Rows'}
@@ -969,7 +969,7 @@ export default function SeedWizardPage() {
 
                 {csvHeaders.length > 0 && (
                   <div style={{ marginBottom: '16px' }}>
-                    <div style={{ padding: '8px', background: '#E5F5E5', border: '1px solid #ACA899', color: 'green', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>
+                    <div style={{ padding: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--app-border)', color: 'green', fontSize: '11px', fontWeight: 'bold', marginBottom: '8px' }}>
                       ✅ Data Loaded: {csvData.length} rows with {csvHeaders.length} columns.
                     </div>
                     
@@ -983,7 +983,7 @@ export default function SeedWizardPage() {
                             csvHeaders.forEach(h => newRow[h] = '');
                             setCsvData([newRow, ...csvData]);
                           }}
-                          style={{ padding: '2px 8px', fontSize: '11px', background: '#D4D0C8' }}
+                          style={{ padding: '2px 8px', fontSize: '11px', background: 'var(--app-panel)' }}
                         >
                           ➕ Add Row
                         </button>
@@ -1012,14 +1012,14 @@ export default function SeedWizardPage() {
                       )}
                     </div>
 
-                    <div style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid #ACA899', background: '#FFF' }}>
+                    <div style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid var(--app-border)', background: 'var(--app-window-bg)' }}>
                       <table style={{ width: 'max-content', borderCollapse: 'collapse', fontSize: '11px' }}>
-                        <thead style={{ background: '#EBEBEB', position: 'sticky', top: 0, zIndex: 1 }}>
+                        <thead style={{ background: 'var(--app-panel)', position: 'sticky', top: 0, zIndex: 1 }}>
                           <tr>
-                            <th style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>#</th>
-                            <th style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>Actions</th>
+                            <th style={{ border: '1px solid var(--app-border)', padding: '4px', background: 'var(--app-panel)' }}>#</th>
+                            <th style={{ border: '1px solid var(--app-border)', padding: '4px', background: 'var(--app-panel)' }}>Actions</th>
                             {csvHeaders.map(h => (
-                              <th key={h} style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>{h}</th>
+                              <th key={h} style={{ border: '1px solid var(--app-border)', padding: '4px', background: 'var(--app-panel)' }}>{h}</th>
                             ))}
                           </tr>
                         </thead>
@@ -1028,8 +1028,8 @@ export default function SeedWizardPage() {
                             const rIdx = editorPage * 100 + mapIdx;
                             return (
                               <tr key={rIdx}>
-                                <td style={{ border: '1px solid #ACA899', padding: '4px', background: '#EBEBEB', textAlign: 'center', color: '#666' }}>{rIdx + 1}</td>
-                                <td style={{ border: '1px solid #ACA899', padding: '4px', background: '#EBEBEB', textAlign: 'center' }}>
+                                <td style={{ border: '1px solid var(--app-border)', padding: '4px', background: 'var(--app-panel)', textAlign: 'center', color: '#666' }}>{rIdx + 1}</td>
+                                <td style={{ border: '1px solid var(--app-border)', padding: '4px', background: 'var(--app-panel)', textAlign: 'center' }}>
                                   <button 
                                     className="btn" 
                                     onClick={() => { setEditingRowIdx(rIdx); setEditFormData({...row}); }} 
@@ -1058,7 +1058,7 @@ export default function SeedWizardPage() {
                                   const errorMessage = isInvalidUuid ? 'Invalid UUID format' : (fkError || '');
 
                                   return (
-                                    <td key={h} style={{ border: '1px solid #ACA899', padding: 0 }}>
+                                    <td key={h} style={{ border: '1px solid var(--app-border)', padding: 0 }}>
                                       {isEnum ? (
                                         <select 
                                           value={row[h] || ''} 
@@ -1073,7 +1073,7 @@ export default function SeedWizardPage() {
                                             border: 'none', 
                                             padding: '4px', 
                                             fontSize: '11px',
-                                            background: '#E5F5E5',
+                                            background: 'rgba(16, 185, 129, 0.1)',
                                             outline: 'none',
                                             cursor: 'pointer'
                                           }}
@@ -1106,8 +1106,8 @@ export default function SeedWizardPage() {
                                             border: 'none', 
                                             padding: '4px', 
                                             fontSize: '11px',
-                                            background: hasError ? '#FFEEEE' : '#E5F5E5',
-                                            color: '#000',
+                                            background: hasError ? '#FFEEEE' : 'rgba(16, 185, 129, 0.1)',
+                                            color: 'var(--app-text)',
                                             outline: hasError ? '1px solid red' : 'none',
                                             cursor: 'pointer'
                                           }}
@@ -1138,8 +1138,8 @@ export default function SeedWizardPage() {
                                             border: 'none', 
                                             padding: '4px', 
                                             fontSize: '11px',
-                                            background: '#E5F5E5',
-                                            color: '#000',
+                                            background: 'rgba(16, 185, 129, 0.1)',
+                                            color: 'var(--app-text)',
                                             outline: 'none',
                                             cursor: 'pointer'
                                           }}
@@ -1173,10 +1173,10 @@ export default function SeedWizardPage() {
                                             padding: '4px', 
                                             fontSize: '11px',
                                             background: hasError ? '#FFEEEE' : 'transparent',
-                                            color: hasError ? 'red' : '#000',
+                                            color: hasError ? 'red' : 'var(--app-text)',
                                             outline: hasError ? '1px solid red' : 'none'
                                           }}
-                                          onFocus={e => { if(!hasError) { e.target.style.background = '#FFFFE1'; e.target.style.color = '#000'; } }}
+                                          onFocus={e => { if(!hasError) { e.target.style.background = 'rgba(245, 158, 11, 0.1)'; e.target.style.color = 'var(--app-text)'; } }}
                                           onBlur={async (e) => {
                                             if (!hasError) { e.target.style.background = 'transparent'; }
                                             
@@ -1225,7 +1225,7 @@ export default function SeedWizardPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)' }}>
                   <button className="btn" onClick={() => setStep(1)}>{'< Back'}</button>
                   <button className="btn btn-primary" onClick={goToMapping} disabled={!selectedTable || csvHeaders.length === 0}>
                     Next {'>'}
@@ -1242,7 +1242,7 @@ export default function SeedWizardPage() {
                           <div className="app-titlebar-btn" onClick={() => setEditingRowIdx(null)}>X</div>
                         </div>
                       </div>
-                      <div className="app-content" style={{ overflow: 'auto', background: '#ECE9D8', flex: 1, padding: '16px' }}>
+                      <div className="app-content" style={{ overflow: 'auto', background: 'var(--app-bg)', flex: 1, padding: '16px' }}>
                         <div style={{ display: 'grid', gap: '8px' }}>
                           {csvHeaders.map(h => {
                             let dbCol = columns.find(c => c.column_name === h || c.column_name === h.toLowerCase());
@@ -1300,14 +1300,14 @@ export default function SeedWizardPage() {
                                     type="text" 
                                     value={editFormData[h] || ''} 
                                     onChange={(e) => setEditFormData({...editFormData, [h]: e.target.value})}
-                                    style={{ width: '100%', padding: '4px', fontSize: '11px', border: '1px solid #ACA899' }}
+                                    style={{ width: '100%', padding: '4px', fontSize: '11px', border: '1px solid var(--app-border)' }}
                                   />
                                 )}
                               </div>
                             );
                           })}
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--app-border)' }}>
                           <button className="btn" onClick={() => setEditingRowIdx(null)}>Cancel</button>
                           <button className="btn btn-primary" onClick={() => {
                             const newData = [...csvData];
@@ -1327,7 +1327,7 @@ export default function SeedWizardPage() {
 
 {step === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid var(--app-border)', paddingBottom: '8px' }}>
                   {wizardMode === 'csv' ? 'Map Columns' : 'Build Entity Data'}
                 </h3>
                 
@@ -1337,8 +1337,8 @@ export default function SeedWizardPage() {
                     
                     <div style={{ display: 'flex', gap: '16px', flex: 1, overflow: 'hidden' }}>
                       {/* Left: List of saved records */}
-                      <div style={{ width: '250px', background: '#FFF', border: '1px solid #ACA899', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ width: '250px', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid var(--app-border)', background: 'var(--app-bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <strong>Saved Records ({entityFormDataList.length})</strong>
                           <button className="btn" style={{ fontSize: '10px' }} onClick={() => {
                             setActiveRecordIndex(null);
@@ -1351,9 +1351,9 @@ export default function SeedWizardPage() {
                               key={idx} 
                               style={{ 
                                 padding: '8px', 
-                                border: '1px solid #CCC', 
+                                border: '1px solid var(--app-border)', 
                                 cursor: 'pointer',
-                                background: activeRecordIndex === idx ? '#E0EEF9' : '#FFF',
+                                background: activeRecordIndex === idx ? '#E0EEF9' : 'var(--app-window-bg)',
                                 fontSize: '11px'
                               }}
                               onClick={() => {
@@ -1385,8 +1385,8 @@ export default function SeedWizardPage() {
                       </div>
 
                       {/* Right: Active Form */}
-                      <div style={{ flex: 1, background: '#FFF', border: '1px solid #ACA899', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ flex: 1, background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid var(--app-border)', background: 'var(--app-bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <strong>{activeRecordIndex !== null ? `Editing Record #${activeRecordIndex + 1}` : 'New Record'}</strong>
                           <button className="btn btn-primary" style={{ fontSize: '10px' }} onClick={() => {
                             if (activeRecordIndex !== null) {
@@ -1411,7 +1411,7 @@ export default function SeedWizardPage() {
                       </div>
                     </div>
 
-                    <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', marginTop: '16px' }}>
+                    <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)', marginTop: '16px' }}>
                       <button className="btn" onClick={() => setStep(2)}>{'< Back'}</button>
                       <button className="btn btn-primary" onClick={performEntityExport} disabled={entityFormDataList.length === 0}>
                         Generate SQL {'>'}
@@ -1422,23 +1422,23 @@ export default function SeedWizardPage() {
                   <>
                 <p style={{ fontSize: '11px' }}>Table: <b>{selectedTable}</b>. We auto-mapped columns where possible.</p>
                 
-                <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF', border: '1px solid #ACA899', marginBottom: '16px' }}>
+                <div style={{ flex: 1, overflow: 'auto', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', marginBottom: '16px' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
-                    <thead style={{ background: '#EBEBEB', borderBottom: '1px solid #ACA899' }}>
+                    <thead style={{ background: 'var(--app-panel)', borderBottom: '1px solid var(--app-border)' }}>
                       <tr>
-                        <th style={{ padding: '4px', textAlign: 'left', borderRight: '1px solid #ACA899' }}>CSV Header</th>
+                        <th style={{ padding: '4px', textAlign: 'left', borderRight: '1px solid var(--app-border)' }}>CSV Header</th>
                         <th style={{ padding: '4px', textAlign: 'left' }}>Maps To (DB Column)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {csvHeaders.map(header => (
-                        <tr key={header} style={{ borderBottom: '1px solid #EBEBEB' }}>
-                          <td style={{ padding: '4px', borderRight: '1px solid #ACA899', fontWeight: 'bold' }}>{header}</td>
+                        <tr key={header} style={{ borderBottom: '1px solid var(--app-panel)' }}>
+                          <td style={{ padding: '4px', borderRight: '1px solid var(--app-border)', fontWeight: 'bold' }}>{header}</td>
                           <td style={{ padding: '4px' }}>
                             <select 
                               value={mapping[header] || ''} 
                               onChange={e => setMapping({...mapping, [header]: e.target.value})}
-                              style={{ width: '100%', background: mapping[header] && mapping[header] !== 'SKIP' ? '#E5F5E5' : '#FFF' }}
+                              style={{ width: '100%', background: mapping[header] && mapping[header] !== 'SKIP' ? 'rgba(16, 185, 129, 0.1)' : 'var(--app-window-bg)' }}
                             >
                               <option value="SKIP">-- Skip / Do Not Map --</option>
                               {columns.map(c => (
@@ -1452,7 +1452,7 @@ export default function SeedWizardPage() {
                   </table>
                 </div>
 
-                <div style={{ marginBottom: '16px', border: '1px solid #ACA899', padding: '8px', background: '#FFFFE1' }}>
+                <div style={{ marginBottom: '16px', border: '1px solid var(--app-border)', padding: '8px', background: 'rgba(245, 158, 11, 0.1)' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>🪄 Auto-Generate Missing IDs (UUIDv4)</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {columns.filter(c => c.column_name.includes('uuid') || c.column_name.includes('id')).map(c => (
@@ -1468,7 +1468,7 @@ export default function SeedWizardPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)' }}>
                   <button className="btn" onClick={() => setStep(2)}>{'< Back'}</button>
                   <button className="btn btn-primary" onClick={performExport}>
                     Generate Seed {'>'}
@@ -1481,7 +1481,7 @@ export default function SeedWizardPage() {
 
             {step === 4 && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Finished! 🎉</h3>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid var(--app-border)', paddingBottom: '8px' }}>Finished! 🎉</h3>
                 <p style={{ fontSize: '11px' }}>Your seed data is ready. You can copy the JSON array or direct SQL INSERT statements.</p>
                 
                 <div style={{ display: 'flex', flex: 1, gap: '16px', overflow: 'hidden', marginBottom: '16px' }}>
@@ -1508,7 +1508,7 @@ export default function SeedWizardPage() {
                     <textarea 
                       value={exportedJson} 
                       readOnly 
-                      style={{ flex: 1, fontFamily: 'monospace', width: '100%', border: '1px solid #ACA899', resize: 'none', whiteSpace: 'pre' }} 
+                      style={{ flex: 1, fontFamily: 'monospace', width: '100%', border: '1px solid var(--app-border)', resize: 'none', whiteSpace: 'pre' }} 
                     />
                   </div>
 
@@ -1534,13 +1534,13 @@ export default function SeedWizardPage() {
                     <textarea 
                       value={exportedSql} 
                       readOnly 
-                      style={{ flex: 1, fontFamily: 'monospace', width: '100%', border: '1px solid #ACA899', resize: 'none', whiteSpace: 'pre', background: '#F4F4F4' }} 
+                      style={{ flex: 1, fontFamily: 'monospace', width: '100%', border: '1px solid var(--app-border)', resize: 'none', whiteSpace: 'pre', background: 'var(--app-panel)' }} 
                     />
                   </div>
 
                 </div>
 
-                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', alignItems: 'center' }}>
+                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid var(--app-border)', alignItems: 'center' }}>
                   <button className="btn" onClick={() => setStep(3)}>{'< Back'}</button>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     {executeResult && <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{executeResult}</span>}

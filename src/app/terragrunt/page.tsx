@@ -179,11 +179,11 @@ export default function TerragruntPage() {
         
         {/* Left Panel: File Browser */}
         {sidebarOpen && (
-          <div style={{ width: '400px', display: 'flex', flexDirection: 'column', borderRight: '2px solid #ACA899', background: '#FFF' }}>
-            <div style={{ background: '#0A246A', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
+          <div style={{ width: '400px', display: 'flex', flexDirection: 'column', borderRight: '2px solid var(--app-border)', background: 'var(--app-window-bg)' }}>
+            <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
               Local File Explorer
             </div>
-            <div style={{ padding: '8px', background: '#ECE9D8', borderBottom: '1px solid #ACA899', display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <div style={{ padding: '8px', background: 'var(--app-bg)', borderBottom: '1px solid var(--app-border)', display: 'flex', gap: '4px', alignItems: 'center' }}>
               <button onClick={navigateUp} style={{ padding: '2px 8px', fontSize: '11px' }}>⬆️ Up</button>
               <input 
                 type="text" 
@@ -226,9 +226,9 @@ export default function TerragruntPage() {
         )}
 
         {/* Right Panel: Cart & Compare */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#ECE9D8', minWidth: 0 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--app-bg)', minWidth: 0 }}>
           
-          <div style={{ padding: '16px', borderBottom: '2px solid #ACA899' }}>
+          <div style={{ padding: '16px', borderBottom: '2px solid var(--app-border)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ marginTop: 0, fontSize: '14px' }}>Comparison Cart 🛒</h3>
               <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ fontSize: '11px', padding: '2px 8px', cursor: 'pointer' }}>
@@ -238,9 +238,9 @@ export default function TerragruntPage() {
             {selectedFiles.length === 0 ? (
               <div style={{ fontSize: '11px', color: '#666' }}>Browse folders on the left and click "+ Add" to select terragrunt.hcl files.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '150px', overflowY: 'auto', background: '#FFF', border: '1px solid #ACA899', padding: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '150px', overflowY: 'auto', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', padding: '8px' }}>
                 {selectedFiles.map(sf => (
-                  <div key={sf} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', background: '#F0F0F0', padding: '4px' }}>
+                  <div key={sf} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', background: 'var(--app-panel)', padding: '4px' }}>
                     <span>{sf}</span>
                     <button onClick={() => removeFile(sf)} style={{ color: 'red', border: 'none', background: 'transparent', cursor: 'pointer', fontWeight: 'bold' }}>X</button>
                   </div>
@@ -257,7 +257,7 @@ export default function TerragruntPage() {
           </div>
 
           {/* Results Grid */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '16px', background: '#FFF', paddingBottom: pendingEditsCount > 0 ? '100px' : '16px' }}>
+          <div style={{ flex: 1, overflow: 'auto', padding: '16px', background: 'var(--app-window-bg)', paddingBottom: pendingEditsCount > 0 ? '100px' : '16px' }}>
             {!environments ? (
               <div style={{ textAlign: 'center', color: '#888', marginTop: '40px', fontSize: '12px' }}>
                 Select files and click Compare to view the config differences.
@@ -271,10 +271,10 @@ export default function TerragruntPage() {
 
                 <table className="no-hover" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', fontFamily: 'monospace' }}>
                   <thead>
-                    <tr style={{ background: '#0A246A', color: 'white' }}>
-                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ACA899' }}>Variable Key</th>
+                    <tr style={{ background: 'var(--app-blue-dark)', color: 'white' }}>
+                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid var(--app-border)' }}>Variable Key</th>
                       {Object.keys(environments).sort().map(env => (
-                        <th key={env} style={{ padding: '8px', textAlign: 'center', border: '1px solid #ACA899', textTransform: 'uppercase' }}>
+                        <th key={env} style={{ padding: '8px', textAlign: 'center', border: '1px solid var(--app-border)', textTransform: 'uppercase' }}>
                           {env}
                         </th>
                       ))}
@@ -291,8 +291,8 @@ export default function TerragruntPage() {
                       const isDiff = uniqueValues.size > 1;
 
                       return (
-                        <tr key={key} style={{ borderBottom: '1px solid #EEE' }}>
-                          <td style={{ padding: '6px 8px', border: '1px solid #ACA899', fontWeight: 'bold', background: '#F9F9F9' }}>
+                        <tr key={key} style={{ borderBottom: '1px solid var(--app-border)' }}>
+                          <td style={{ padding: '6px 8px', border: '1px solid var(--app-border)', fontWeight: 'bold', background: '#F9F9F9' }}>
                             {key}
                           </td>
                           {Object.keys(environments).sort().map(env => {
@@ -313,10 +313,10 @@ export default function TerragruntPage() {
                             const isPending = !!edits[editKey];
                             const currentVal = isPending ? edits[editKey].newValue : originalVal;
 
-                            const bg = !exists ? '#FFEBEB' : (isPending ? '#DDEEFE' : (isDiff ? '#FFF4CC' : '#E5F5E5'));
+                            const bg = !exists ? '#FFEBEB' : (isPending ? '#DDEEFE' : (isDiff ? 'var(--app-window-bg)4CC' : 'rgba(16, 185, 129, 0.1)'));
 
                             return (
-                              <td key={env} style={{ padding: '4px 8px', border: '1px solid #ACA899', textAlign: 'center', background: bg, maxWidth: '250px' }}>
+                              <td key={env} style={{ padding: '4px 8px', border: '1px solid var(--app-border)', textAlign: 'center', background: bg, maxWidth: '250px' }}>
                                 {exists ? (
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                     <span style={{ fontSize: '9px', color: '#888' }}>[{typeStr}]</span>
@@ -325,9 +325,9 @@ export default function TerragruntPage() {
                                       onChange={e => handleEditChange(envData.path, key, originalVal, e.target.value, typeStr)}
                                       style={{
                                         width: '100%',
-                                        background: isPending ? '#FFF' : 'transparent',
+                                        background: isPending ? 'var(--app-window-bg)' : 'transparent',
                                         border: isPending ? '1px solid #0058e6' : '1px dashed transparent',
-                                        color: isPending ? '#000' : (isDiff ? '#B8860B' : 'green'),
+                                        color: isPending ? 'var(--app-text)' : (isDiff ? '#B8860B' : 'green'),
                                         fontFamily: 'monospace',
                                         fontSize: '11px',
                                         padding: '2px',
@@ -352,8 +352,8 @@ export default function TerragruntPage() {
 
           {/* Commit Bar */}
           {pendingEditsCount > 0 && (
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#ECE9D8', borderTop: '2px solid #ACA899', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#0A246A' }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--app-bg)', borderTop: '2px solid var(--app-border)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '13px', color: 'var(--app-blue-dark)' }}>
                 ✍️ {pendingEditsCount} Pending Changes
               </div>
               <input 

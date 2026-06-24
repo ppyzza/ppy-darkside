@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Storage</div>
                 <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>📁</span> S3 Explorer
                   </Link>
                 </div>
@@ -59,10 +59,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Messaging</div>
                 <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/sqs" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/sqs" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>📁</span> SQS Manager
                   </Link>
-                  <Link href="#" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.5 }}>
+                  <Link href="#" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.5 }}>
                     <span style={{ color: '#E5C365' }}>📁</span> SNS Topics
                   </Link>
                 </div>
@@ -71,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[+] Intelligence</div>
                 <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/knowledge" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/knowledge" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🧠</span> Knowledge Graph
                   </Link>
                 </div>
@@ -80,25 +80,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Accessories</div>
                 <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <Link href="/seed-wizard" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/seed-wizard" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🪄</span> CSV to Seed Wizard
                   </Link>
-                  <Link href="/config-compare" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/config-compare" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>⚙️</span> Config Checker
                   </Link>
-                  <Link href="/tenant-compare" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/tenant-compare" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🏢</span> Tenant Checker
                   </Link>
-                  <Link href="/db-diff" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/db-diff" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>⚖️</span> Database Diff Wizard
                   </Link>
-                  <Link href="/terragrunt" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/terragrunt" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🌍</span> Terragrunt Inspector
                   </Link>
-                  <Link href="/utilities" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/utilities" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🧰</span> PowerToys
                   </Link>
-                  <Link href="/sqs" style={{ color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Link href="/sqs" style={{ color: 'var(--app-text)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ color: '#E5C365' }}>🚀</span> SQS Simulator
                   </Link>
                 </div>

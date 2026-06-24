@@ -102,7 +102,7 @@ export default function SQSPage() {
         <div style={{ display: 'flex', gap: '16px' }}>
           {/* Left Panel: Config */}
           <div className="window-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ fontWeight: 'bold', color: '#0A246A', borderBottom: '1px solid #ACA899', paddingBottom: '4px' }}>
+            <div style={{ fontWeight: 'bold', color: 'var(--app-blue-dark)', borderBottom: '1px solid var(--app-border)', paddingBottom: '4px' }}>
               1. Select Localstack Queue
             </div>
             
@@ -125,7 +125,7 @@ export default function SQSPage() {
               <button onClick={fetchQueues} style={{ marginTop: '4px', fontSize: '10px', padding: '2px 6px' }}>🔄 Refresh Queues</button>
             </div>
 
-            <div style={{ fontWeight: 'bold', color: '#0A246A', borderBottom: '1px solid #ACA899', paddingBottom: '4px', marginTop: '12px' }}>
+            <div style={{ fontWeight: 'bold', color: 'var(--app-blue-dark)', borderBottom: '1px solid var(--app-border)', paddingBottom: '4px', marginTop: '12px' }}>
               2. Load Preset Scenario
             </div>
             
@@ -141,13 +141,13 @@ export default function SQSPage() {
                 ))}
               </select>
               {selectedPreset && (
-                <div style={{ marginTop: '8px', fontSize: '11px', color: '#666', background: '#F9F9F9', padding: '6px', border: '1px solid #EBEBEB' }}>
+                <div style={{ marginTop: '8px', fontSize: '11px', color: '#666', background: '#F9F9F9', padding: '6px', border: '1px solid var(--app-panel)' }}>
                   ℹ️ {selectedPreset.description}
                 </div>
               )}
             </div>
 
-            <div style={{ fontWeight: 'bold', color: '#0A246A', borderBottom: '1px solid #ACA899', paddingBottom: '4px', marginTop: '12px' }}>
+            <div style={{ fontWeight: 'bold', color: 'var(--app-blue-dark)', borderBottom: '1px solid var(--app-border)', paddingBottom: '4px', marginTop: '12px' }}>
               3. Event Name
             </div>
             <input 
@@ -161,7 +161,7 @@ export default function SQSPage() {
 
           {/* Right Panel: JSON Payload */}
           <div className="window-panel" style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontWeight: 'bold', color: '#0A246A', borderBottom: '1px solid #ACA899', paddingBottom: '4px', marginBottom: '8px' }}>
+            <div style={{ fontWeight: 'bold', color: 'var(--app-blue-dark)', borderBottom: '1px solid var(--app-border)', paddingBottom: '4px', marginBottom: '8px' }}>
               JSON Payload
             </div>
             <textarea
@@ -173,8 +173,8 @@ export default function SQSPage() {
                 fontFamily: 'monospace',
                 fontSize: '12px',
                 padding: '8px',
-                background: '#FFF',
-                border: '1px inset #ACA899',
+                background: 'var(--app-window-bg)',
+                border: '1px inset var(--app-border)',
                 resize: 'none'
               }}
               spellCheck={false}

@@ -275,19 +275,19 @@ export default function S3Page() {
       <div className="app-content flex-col" style={{ display: 'flex', flexDirection: 'column' }}>
         
         {/* Toolbar */}
-        <div style={{ display: 'flex', gap: '8px', paddingBottom: '8px', borderBottom: '1px solid #ACA899', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--app-border)', marginBottom: '8px' }}>
           {!selectedBucket ? (
             <button className="btn" onClick={() => setShowBucketModal(true)}>✨ New Bucket</button>
           ) : (
             <>
               <button className="btn" onClick={() => { setSelectedBucket(null); setCurrentPrefix(''); }}>⬅️ Back</button>
-              <div style={{ width: '1px', background: '#ACA899', margin: '0 4px' }}></div>
+              <div style={{ width: '1px', background: 'var(--app-border)', margin: '0 4px' }}></div>
               <button className="btn" onClick={() => setShowFolderModal(true)}>📁 New Folder</button>
               <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />
               <button className="btn" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
                 {uploading ? 'Uploading...' : '📤 Upload File'}
               </button>
-              <div style={{ width: '1px', background: '#ACA899', margin: '0 4px' }}></div>
+              <div style={{ width: '1px', background: 'var(--app-border)', margin: '0 4px' }}></div>
               <button className="btn" onClick={() => handleEmptyBucket(selectedBucket)}>☢️ Empty Bucket</button>
               <button className="btn btn-danger" onClick={() => handleDeleteBucket(selectedBucket)}>🗑️ Delete Bucket</button>
             </>
@@ -298,8 +298,8 @@ export default function S3Page() {
         {selectedBucket && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <span style={{ fontSize: '11px', color: 'var(--xp-text-muted)' }}>Address</span>
-            <div style={{ flex: 1, background: '#FFFFFF', border: '1px solid #7F9DB9', padding: '2px 6px', display: 'flex', gap: '4px', fontSize: '11px' }}>
-              <span style={{ cursor: 'pointer', color: currentPrefix === '' ? '#000' : '#0000EE', textDecoration: currentPrefix === '' ? 'none' : 'underline' }} onClick={() => setCurrentPrefix('')}>
+            <div style={{ flex: 1, background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', padding: '2px 6px', display: 'flex', gap: '4px', fontSize: '11px' }}>
+              <span style={{ cursor: 'pointer', color: currentPrefix === '' ? 'var(--app-text)' : '#0000EE', textDecoration: currentPrefix === '' ? 'none' : 'underline' }} onClick={() => setCurrentPrefix('')}>
                 {selectedBucket}
               </span>
               {breadcrumbs.map((crumb, idx) => {
@@ -307,8 +307,8 @@ export default function S3Page() {
                 const isLast = currentPrefix === path;
                 return (
                   <span key={path} style={{ display: 'flex', gap: '4px' }}>
-                    <span style={{ color: '#7F9DB9' }}>\</span>
-                    <span style={{ cursor: 'pointer', color: isLast ? '#000' : '#0000EE', textDecoration: isLast ? 'none' : 'underline' }} onClick={() => setCurrentPrefix(path)}>
+                    <span style={{ color: 'var(--app-border)' }}>\</span>
+                    <span style={{ cursor: 'pointer', color: isLast ? 'var(--app-text)' : '#0000EE', textDecoration: isLast ? 'none' : 'underline' }} onClick={() => setCurrentPrefix(path)}>
                       {crumb}
                     </span>
                   </span>
@@ -323,7 +323,7 @@ export default function S3Page() {
           
           {!selectedBucket ? (
             // Bucket List
-            <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF' }}>
+            <div style={{ flex: 1, overflow: 'auto', background: 'var(--app-window-bg)' }}>
               {loading ? (
                 <div style={{ padding: '8px' }}>Loading buckets...</div>
               ) : (
@@ -365,7 +365,7 @@ export default function S3Page() {
             </div>
           ) : (
             // Object List
-            <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF' }}>
+            <div style={{ flex: 1, overflow: 'auto', background: 'var(--app-window-bg)' }}>
               {loading && !uploading ? (
                 <div style={{ padding: '8px' }}>Loading objects...</div>
               ) : (

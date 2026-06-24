@@ -36,8 +36,8 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
   };
 
   return (
-    <div style={{ marginLeft: level * 16, borderLeft: '2px solid #ACA899', paddingLeft: '8px', marginBottom: '8px' }}>
-      <h4 style={{ margin: '4px 0', fontSize: '12px', color: '#0A246A' }}>{entity.className} ({entity.tableName})</h4>
+    <div style={{ marginLeft: level * 16, borderLeft: '2px solid var(--app-border)', paddingLeft: '8px', marginBottom: '8px' }}>
+      <h4 style={{ margin: '4px 0', fontSize: '12px', color: 'var(--app-blue-dark)' }}>{entity.className} ({entity.tableName})</h4>
       
       {/* Columns */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '8px' }}>
@@ -78,7 +78,7 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
                   const options = entity.enums[col];
                   return (
                     <select
-                      style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid #ACA899' }}
+                      style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid var(--app-border)' }}
                       value={formData[col] || ''}
                       onChange={(e) => handleFieldChange(col, e.target.value)}
                     >
@@ -93,7 +93,7 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <input 
                         type="text" 
-                        style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid #ACA899' }}
+                        style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid var(--app-border)' }}
                         value={formData[col] || ''}
                         onChange={(e) => handleFieldChange(col, e.target.value)}
                         placeholder="YYYY-MM-DD HH:mm:ss"
@@ -123,7 +123,7 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
                 return (
                   <input 
                     type="text" 
-                    style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid #ACA899' }}
+                    style={{ width: '100%', padding: '2px', fontSize: '11px', border: '1px solid var(--app-border)' }}
                     value={formData[col] || ''}
                     onChange={(e) => handleFieldChange(col, e.target.value)}
                   />
@@ -140,7 +140,7 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
           if (rel.type === 'OneToMany') {
             const arr = formData[rel.property] || [];
             return (
-              <div key={rel.property} style={{ background: '#F0F0F0', padding: '8px', border: '1px solid #EBEBEB' }}>
+              <div key={rel.property} style={{ background: 'var(--app-panel)', padding: '8px', border: '1px solid var(--app-panel)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{rel.property} (1:N {rel.target})</span>
                   <button className="btn" style={{ fontSize: '10px' }} onClick={() => handleAddRelation(rel.property)}>+ Add</button>
@@ -166,7 +166,7 @@ export const EntityForm: React.FC<EntityFormProps> = ({ entityName, entities, fo
             );
           } else if (rel.type === 'ManyToOne') {
             return (
-              <div key={rel.property} style={{ background: '#E5F5E5', padding: '8px', border: '1px solid #EBEBEB' }}>
+              <div key={rel.property} style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px', border: '1px solid var(--app-panel)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                   <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{rel.property} (N:1 {rel.target})</span>
                   {formData[rel.property] ? (

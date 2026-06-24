@@ -18,16 +18,16 @@ import '@xyflow/react/dist/style.css';
 const CustomNode = ({ data }: any) => {
   const getColors = (type: string) => {
     switch (type) {
-      case 'Application': return { bg: '#0A246A', text: '#FFFFFF', icon: '🏢' };
-      case 'Library': return { bg: '#D83B01', text: '#FFFFFF', icon: '📚' };
-      case 'Controller': return { bg: '#008080', text: '#FFFFFF', icon: '🌐' };
-      case 'Service': return { bg: '#3a93ff', text: '#FFFFFF', icon: '⚙️' };
-      case 'Entity': return { bg: '#107C10', text: '#FFFFFF', icon: '💾' };
-      case 'Module': return { bg: '#D83B01', text: '#FFFFFF', icon: '📦' };
-      case 'CommandHandler': return { bg: '#6B69D6', text: '#FFFFFF', icon: '⚡' };
-      case 'EventHandler': return { bg: '#8764B8', text: '#FFFFFF', icon: '📡' };
-      case 'Endpoint': return { bg: '#FFB900', text: '#000000', icon: '🔌' };
-      default: return { bg: '#ECE9D8', text: '#000000', icon: '📄' };
+      case 'Application': return { bg: 'var(--app-blue-dark)', text: 'var(--app-window-bg)', icon: '🏢' };
+      case 'Library': return { bg: '#D83B01', text: 'var(--app-window-bg)', icon: '📚' };
+      case 'Controller': return { bg: '#008080', text: 'var(--app-window-bg)', icon: '🌐' };
+      case 'Service': return { bg: '#3a93ff', text: 'var(--app-window-bg)', icon: '⚙️' };
+      case 'Entity': return { bg: '#107C10', text: 'var(--app-window-bg)', icon: '💾' };
+      case 'Module': return { bg: '#D83B01', text: 'var(--app-window-bg)', icon: '📦' };
+      case 'CommandHandler': return { bg: '#6B69D6', text: 'var(--app-window-bg)', icon: '⚡' };
+      case 'EventHandler': return { bg: '#8764B8', text: 'var(--app-window-bg)', icon: '📡' };
+      case 'Endpoint': return { bg: '#FFB900', text: 'var(--app-text)', icon: '🔌' };
+      default: return { bg: 'var(--app-bg)', text: 'var(--app-text)', icon: '📄' };
     }
   };
 
@@ -45,15 +45,15 @@ const CustomNode = ({ data }: any) => {
       <Handle type="target" position={Position.Top} style={{ background: '#555' }} />
       <div style={{
         background: `linear-gradient(to right, ${colors.bg}, #0058e6)`,
-        color: '#FFFFFF',
+        color: 'var(--app-window-bg)',
         padding: '4px 8px',
         fontWeight: 'bold',
         fontSize: '11px',
-        borderBottom: '1px solid #000'
+        borderBottom: '1px solid var(--app-text)'
       }}>
         {colors.icon} {data.nodeType}
       </div>
-      <div style={{ padding: '8px', fontSize: '11px', color: '#000' }}>
+      <div style={{ padding: '8px', fontSize: '11px', color: 'var(--app-text)' }}>
         <strong>{data.label}</strong>
       </div>
       <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} />
@@ -317,15 +317,15 @@ export default function KnowledgeGraphPage() {
           width: '500px', height: '400px', background: 'var(--xp-bg)', border: '2px solid #0058e6',
           boxShadow: '4px 4px 10px rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', flexDirection: 'column'
         }}>
-          <div style={{ background: 'linear-gradient(to right, #0A246A, #0058e6)', color: '#fff', padding: '4px 8px', fontWeight: 'bold', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ background: 'linear-gradient(to right, var(--app-blue-dark), #0058e6)', color: 'var(--app-window-bg)', padding: '4px 8px', fontWeight: 'bold', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
             <span>Browse for Folder</span>
-            <button onClick={() => setShowBrowser(false)} style={{ background: '#d83b01', color: '#fff', border: '1px solid #fff', cursor: 'pointer', fontWeight: 'bold' }}>X</button>
+            <button onClick={() => setShowBrowser(false)} style={{ background: '#d83b01', color: 'var(--app-window-bg)', border: '1px solid var(--app-window-bg)', cursor: 'pointer', fontWeight: 'bold' }}>X</button>
           </div>
-          <div style={{ padding: '8px', display: 'flex', gap: '8px', background: '#ece9d8', borderBottom: '1px solid #aca899' }}>
+          <div style={{ padding: '8px', display: 'flex', gap: '8px', background: 'var(--app-bg)', borderBottom: '1px solid var(--app-border)' }}>
             <button className="btn" onClick={handleGoUp} disabled={browserPath === '/'}>⬆️ Up</button>
             <input type="text" value={browserPath} readOnly style={{ flex: 1, padding: '2px 4px' }} />
           </div>
-          <div style={{ flex: 1, background: '#fff', overflowY: 'auto', padding: '8px' }}>
+          <div style={{ flex: 1, background: 'var(--app-window-bg)', overflowY: 'auto', padding: '8px' }}>
             {browserLoading ? (
               <div style={{ fontSize: '11px', color: '#666' }}>Loading...</div>
             ) : (
@@ -346,7 +346,7 @@ export default function KnowledgeGraphPage() {
               </div>
             )}
           </div>
-          <div style={{ padding: '8px', background: '#ece9d8', borderTop: '1px solid #aca899', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+          <div style={{ padding: '8px', background: 'var(--app-bg)', borderTop: '1px solid var(--app-border)', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
             <button className="btn" onClick={handleSelectFolder}>OK</button>
             <button className="btn" onClick={() => setShowBrowser(false)}>Cancel</button>
           </div>
@@ -360,7 +360,7 @@ export default function KnowledgeGraphPage() {
           type="text" 
           value={repoPath} 
           onChange={(e) => setRepoPath(e.target.value)}
-          style={{ width: '400px', padding: '4px', border: '1px solid #7F9DB9' }}
+          style={{ width: '400px', padding: '4px', border: '1px solid var(--app-border)' }}
         />
         <button className="btn" onClick={handleOpenBrowser}>
           📂 Browse...
@@ -368,7 +368,7 @@ export default function KnowledgeGraphPage() {
         <select 
           value={scanMode} 
           onChange={(e) => setScanMode(e.target.value as any)}
-          style={{ padding: '4px', border: '1px solid #7F9DB9' }}
+          style={{ padding: '4px', border: '1px solid var(--app-border)' }}
         >
           <option value="macro">🌊 Macro View (Apps & Libs)</option>
           <option value="micro">🔬 Micro View (Deep AST Scan)</option>
@@ -377,7 +377,7 @@ export default function KnowledgeGraphPage() {
           {loading ? 'Scanning...' : '🔍 Scan Code'}
         </button>
 
-        <div style={{ width: '1px', height: '24px', background: '#aca899', margin: '0 8px' }}></div>
+        <div style={{ width: '1px', height: '24px', background: 'var(--app-border)', margin: '0 8px' }}></div>
 
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
           <span style={{ fontSize: '11px', fontWeight: 'bold' }}>Search:</span>
@@ -386,7 +386,7 @@ export default function KnowledgeGraphPage() {
             placeholder="e.g. GET /time-off or ServiceName"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '200px', padding: '4px', border: '1px solid #7F9DB9' }}
+            style={{ width: '200px', padding: '4px', border: '1px solid var(--app-border)' }}
           />
           <button type="submit" className="btn">🎯 Focus</button>
         </form>
@@ -400,15 +400,15 @@ export default function KnowledgeGraphPage() {
         {/* Swagger-like Endpoints Sidebar */}
         {scanMode === 'micro' && (
           <div className="window-panel" style={{ width: '320px', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ background: 'linear-gradient(to right, #0A246A, #0058e6)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
+            <div style={{ background: 'linear-gradient(to right, var(--app-blue-dark), #0058e6)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
               🔌 API Endpoints
             </div>
-            <div style={{ flex: 1, background: '#FFFFFF', overflowY: 'auto', padding: '4px' }}>
+            <div style={{ flex: 1, background: 'var(--app-window-bg)', overflowY: 'auto', padding: '4px' }}>
               {nodes.filter(n => n.data.nodeType === 'Endpoint').map(node => {
                 const label = node.data.label;
                 const method = label.split(' ')[0];
                 const path = label.split(' ').slice(1).join(' ');
-                let methodColor = '#000';
+                let methodColor = 'var(--app-text)';
                 if (method === 'GET') methodColor = '#0058e6';
                 if (method === 'POST') methodColor = '#107C10';
                 if (method === 'PUT') methodColor = '#D83B01';
@@ -420,7 +420,7 @@ export default function KnowledgeGraphPage() {
                     key={node.id} 
                     style={{ 
                       fontSize: '11px', padding: '6px', cursor: 'pointer', 
-                      borderBottom: '1px solid #f0f0f0', display: 'flex', gap: '8px', alignItems: 'center'
+                      borderBottom: '1px solid var(--app-panel)', display: 'flex', gap: '8px', alignItems: 'center'
                     }}
                     onClick={() => focusNode(node)}
                     onMouseOver={(e) => e.currentTarget.style.background = '#eef3fc'}
@@ -440,10 +440,10 @@ export default function KnowledgeGraphPage() {
 
         {/* Graph Canvas */}
         <div className="window-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ background: '#0A246A', color: 'white', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+          <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
             Knowledge Graph Explorer (ReactFlow)
           </div>
-          <div style={{ flex: 1, background: '#FFFFFF' }}>
+          <div style={{ flex: 1, background: 'var(--app-window-bg)' }}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -466,16 +466,16 @@ export default function KnowledgeGraphPage() {
 
         {/* Right Panel - Node Details */}
         <div className="window-panel" style={{ width: '300px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-          <div style={{ background: '#0A246A', color: 'white', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+          <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
             Node Details
           </div>
-          <div style={{ padding: '8px', fontSize: '11px', background: '#FFFFFF', flex: 1 }}>
+          <div style={{ padding: '8px', fontSize: '11px', background: 'var(--app-window-bg)', flex: 1 }}>
             {!selectedNode ? (
               <div style={{ color: '#666', fontStyle: 'italic' }}>Select a node in the graph to view details.</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>
-                  <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#0A246A' }}>{selectedNode.data.label}</h3>
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', color: 'var(--app-blue-dark)' }}>{selectedNode.data.label}</h3>
                   <div><strong>Type:</strong> {selectedNode.data.nodeType}</div>
                   <div style={{ color: '#666', fontSize: '10px', wordBreak: 'break-all' }}>{selectedNode.data.file}</div>
                 </div>
@@ -520,7 +520,7 @@ export default function KnowledgeGraphPage() {
                   <div style={{ marginTop: '12px' }}>
                     <h4 style={{ margin: '0 0 4px 0', color: '#6B69D6' }}>⚙️ Logic Snippet ({selectedNode.data.methodName})</h4>
                     <pre style={{ 
-                      background: '#f4f4f4', padding: '8px', border: '1px solid #ccc', 
+                      background: 'var(--app-panel)', padding: '8px', border: '1px solid var(--app-border)', 
                       overflowX: 'auto', fontSize: '10px', maxHeight: '150px' 
                     }}>
                       <code>{selectedNode.data.logicSnippet}</code>
@@ -528,7 +528,7 @@ export default function KnowledgeGraphPage() {
                   </div>
                 )}
 
-                <div style={{ background: '#FFFFE1', padding: '8px', border: '1px solid #000', marginTop: '12px' }}>
+                <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '8px', border: '1px solid var(--app-text)', marginTop: '12px' }}>
                   <strong>💡 Impact Analysis:</strong><br/>
                   If you modify <code>{selectedNode.data.label}</code>, it will directly impact {getDependents(selectedNode.id).length} other component(s).
                 </div>

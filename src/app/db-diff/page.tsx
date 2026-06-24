@@ -126,7 +126,7 @@ export default function DbDiffPage() {
       // Table Missing Checks
       if (!srcCols) {
         return (
-          <div key={tableName} style={{ marginBottom: '8px', border: '1px solid #ACA899', background: '#FFEBEB' }}>
+          <div key={tableName} style={{ marginBottom: '8px', border: '1px solid var(--app-border)', background: '#FFEBEB' }}>
             <div style={{ padding: '4px 8px', fontWeight: 'bold', color: 'red', fontSize: '11px' }}>
               ❌ Table {tableName} (Exists in Target, Missing in Source)
             </div>
@@ -137,7 +137,7 @@ export default function DbDiffPage() {
       if (!tgtCols) {
         sqlMigration += `-- Table ${tableName} is missing in Target\nCREATE TABLE ${targetSchemaName}."${tableName}" (\n  ${srcCols.map(c => `"${c.column_name}" ${c.data_type}`).join(',\n  ')}\n);\n\n`;
         return (
-          <div key={tableName} style={{ marginBottom: '8px', border: '1px solid #ACA899', background: '#E5F5E5' }}>
+          <div key={tableName} style={{ marginBottom: '8px', border: '1px solid var(--app-border)', background: 'rgba(16, 185, 129, 0.1)' }}>
             <div style={{ padding: '4px 8px', fontWeight: 'bold', color: 'green', fontSize: '11px' }}>
               ➕ Table {tableName} (New in Source, Missing in Target)
             </div>
@@ -236,12 +236,12 @@ export default function DbDiffPage() {
         sqlMigration += dataSql;
 
         return (
-          <div style={{ marginTop: '8px', fontSize: '11px', borderTop: '1px solid #CCC', paddingTop: '4px' }}>
+          <div style={{ marginTop: '8px', fontSize: '11px', borderTop: '1px solid var(--app-border)', paddingTop: '4px' }}>
             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Data Differences ({diffs.length}):</div>
             <div style={{ color: 'green' }}>➕ {inserts.length} rows to INSERT</div>
             <div style={{ color: '#C98A00' }}>~ {updates.length} rows to UPDATE</div>
             <div style={{ color: 'red' }}>➖ {deletes.length} rows to DELETE</div>
-            <div style={{ marginTop: '4px', maxHeight: '100px', overflowY: 'auto', background: '#F9F9F9', padding: '4px', border: '1px solid #EEE' }}>
+            <div style={{ marginTop: '4px', maxHeight: '100px', overflowY: 'auto', background: '#F9F9F9', padding: '4px', border: '1px solid var(--app-border)' }}>
               {diffs.slice(0, 50).map((d, i) => (
                 <div key={i} style={{ marginBottom: '2px' }}>
                   {d.action === 'insert' && <span style={{ color: 'green' }}>[INSERT] PK: {d.pkStr}</span>}
@@ -260,12 +260,12 @@ export default function DbDiffPage() {
           <div key={tableName} style={{ marginBottom: '4px' }}>
             <div 
               onClick={() => toggleTable(tableName)}
-              style={{ padding: '4px 8px', fontSize: '11px', cursor: 'pointer', background: '#F0F0F0', border: '1px solid #EBEBEB', display: 'flex', justifyContent: 'space-between' }}
+              style={{ padding: '4px 8px', fontSize: '11px', cursor: 'pointer', background: 'var(--app-panel)', border: '1px solid var(--app-panel)', display: 'flex', justifyContent: 'space-between' }}
             >
               <span>{expandedTables[tableName] ? '📂' : '📁'} Table {tableName} <span style={{ color: '#888' }}>(Identical Schema)</span></span>
             </div>
             {expandedTables[tableName] && (
-              <div style={{ padding: '8px 16px', fontSize: '11px', color: '#666', background: '#FAFAFA' }}>
+              <div style={{ padding: '8px 16px', fontSize: '11px', color: '#666', background: 'var(--app-panel)' }}>
                 <div>All {srcCols.length} columns match perfectly.</div>
                 {renderDataDiff()}
               </div>
@@ -278,12 +278,12 @@ export default function DbDiffPage() {
         <div key={tableName} style={{ marginBottom: '8px', border: '1px solid #C98A00' }}>
           <div 
             onClick={() => toggleTable(tableName)}
-            style={{ padding: '4px 8px', fontWeight: 'bold', fontSize: '11px', background: '#FFFDF0', cursor: 'pointer', color: '#8B6000', display: 'flex', justifyContent: 'space-between' }}
+            style={{ padding: '4px 8px', fontWeight: 'bold', fontSize: '11px', background: 'var(--app-window-bg)DF0', cursor: 'pointer', color: '#8B6000', display: 'flex', justifyContent: 'space-between' }}
           >
             <span>{expandedTables[tableName] ? '📂' : '📁'} Table {tableName} ({colDiffs.length} differences)</span>
           </div>
           {expandedTables[tableName] && (
-            <div style={{ background: '#FFF', padding: '8px' }}>
+            <div style={{ background: 'var(--app-window-bg)', padding: '8px' }}>
               <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>Schema Differences:</div>
               {colDiffs}
               {renderDataDiff()}
@@ -308,7 +308,7 @@ export default function DbDiffPage() {
       </div>
 
       <div className="app-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px', background: '#ECE9D8', borderBottom: '1px solid #ACA899' }}>
+        <div style={{ padding: '16px', background: 'var(--app-bg)', borderBottom: '1px solid var(--app-border)' }}>
           <h3 style={{ marginTop: 0 }}>Select Databases to Compare</h3>
           <div style={{ display: 'flex', gap: '16px' }}>
             
@@ -341,23 +341,23 @@ export default function DbDiffPage() {
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
             
             {/* Left: Visual Diff Tree */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '2px solid #ACA899' }}>
-              <div style={{ background: '#0A246A', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>Visual Schema Diff</div>
-              <div style={{ flex: 1, overflow: 'auto', padding: '8px', background: '#FFF' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '2px solid var(--app-border)' }}>
+              <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>Visual Schema Diff</div>
+              <div style={{ flex: 1, overflow: 'auto', padding: '8px', background: 'var(--app-window-bg)' }}>
                 {diffContent}
               </div>
             </div>
 
             {/* Right: Generated SQL Migration */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ background: '#0A246A', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
                 <span>SQL Migration Script (Apply to Target)</span>
                 <button onClick={() => { navigator.clipboard.writeText(sqlMigration); alert('SQL Copied!'); }} style={{ fontSize: '10px', color: 'black' }}>📋 Copy</button>
               </div>
               <textarea 
                 readOnly 
                 value={sqlMigration} 
-                style={{ flex: 1, width: '100%', border: 'none', resize: 'none', padding: '8px', fontFamily: 'monospace', fontSize: '12px', background: '#F4F4F4', whiteSpace: 'pre' }}
+                style={{ flex: 1, width: '100%', border: 'none', resize: 'none', padding: '8px', fontFamily: 'monospace', fontSize: '12px', background: 'var(--app-panel)', whiteSpace: 'pre' }}
               />
             </div>
 

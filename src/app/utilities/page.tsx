@@ -125,16 +125,16 @@ export default function UtilitiesPage() {
       <div className="app-content" style={{ display: 'flex', flexDirection: 'column' }}>
         
         {/* Tab Header */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #ACA899', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--app-border)', marginBottom: '12px' }}>
           {tabs.map((tab, idx) => (
             <div 
               key={idx}
               onClick={() => setActiveTab(idx)}
               style={{
                 padding: '4px 12px',
-                background: activeTab === idx ? '#FFFFFF' : '#EBEBEB',
-                border: '1px solid #ACA899',
-                borderBottom: activeTab === idx ? '1px solid #FFFFFF' : '1px solid #ACA899',
+                background: activeTab === idx ? 'var(--app-window-bg)' : 'var(--app-panel)',
+                border: '1px solid var(--app-border)',
+                borderBottom: activeTab === idx ? '1px solid var(--app-window-bg)' : '1px solid var(--app-border)',
                 marginBottom: '-1px',
                 borderTopLeftRadius: '3px',
                 borderTopRightRadius: '3px',
@@ -151,7 +151,7 @@ export default function UtilitiesPage() {
         </div>
 
         {/* Tab Body */}
-        <div className="window-panel" style={{ flex: 1, background: '#FFFFFF', padding: '16px', display: 'flex', flexDirection: 'column' }}>
+        <div className="window-panel" style={{ flex: 1, background: 'var(--app-window-bg)', padding: '16px', display: 'flex', flexDirection: 'column' }}>
           
           {/* JWT DECODER */}
           {activeTab === 0 && (
@@ -215,8 +215,8 @@ export default function UtilitiesPage() {
           {/* TIME CONVERTER */}
           {activeTab === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '24px' }}>
-              <div style={{ border: '1px solid #ACA899', padding: '16px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#0A246A' }}>Epoch to Date</div>
+              <div style={{ border: '1px solid var(--app-border)', padding: '16px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--app-blue-dark)' }}>Epoch to Date</div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <input type="text" value={epochInput} onChange={e => setEpochInput(e.target.value)} style={{ width: '200px' }} />
                   <button className="btn btn-primary" onClick={convertEpoch}>Convert ➡️</button>
@@ -224,10 +224,10 @@ export default function UtilitiesPage() {
                 </div>
               </div>
 
-              <div style={{ border: '1px solid #ACA899', padding: '16px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#0A246A' }}>Date to Epoch</div>
+              <div style={{ border: '1px solid var(--app-border)', padding: '16px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--app-blue-dark)' }}>Date to Epoch</div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <input type="datetime-local" value={dateInput} onChange={e => setDateInput(e.target.value)} style={{ width: '200px', padding: '2px', border: '1px solid #7F9DB9' }} />
+                  <input type="datetime-local" value={dateInput} onChange={e => setDateInput(e.target.value)} style={{ width: '200px', padding: '2px', border: '1px solid var(--app-border)' }} />
                   <button className="btn btn-primary" onClick={convertDate}>Convert ➡️</button>
                   <input type="text" value={dateOutput} readOnly style={{ width: '300px', background: '#F5F5F5' }} />
                 </div>
@@ -238,16 +238,16 @@ export default function UtilitiesPage() {
           {/* STRING TOOLS */}
           {activeTab === 3 && (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '24px' }}>
-              <div style={{ border: '1px solid #ACA899', padding: '16px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#0A246A' }}>UUID v4 Generator</div>
+              <div style={{ border: '1px solid var(--app-border)', padding: '16px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--app-blue-dark)' }}>UUID v4 Generator</div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <button className="btn btn-primary" onClick={generateUuid}>Generate UUID</button>
                   <input type="text" value={uuidOutput} readOnly style={{ width: '300px', background: '#F5F5F5', fontFamily: 'monospace' }} />
                 </div>
               </div>
 
-              <div style={{ border: '1px solid #ACA899', padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#0A246A' }}>Base64 Encoder / Decoder</div>
+              <div style={{ border: '1px solid var(--app-border)', padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--app-blue-dark)' }}>Base64 Encoder / Decoder</div>
                 <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
                   <textarea value={base64Raw} onChange={e => setBase64Raw(e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} placeholder="Raw Text" />
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '8px' }}>
