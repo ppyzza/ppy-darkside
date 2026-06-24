@@ -98,19 +98,19 @@ export default function TenantCompareGlass({
         ) : (
           <div style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
             <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-              <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+              <thead style={{ position: 'sticky', top: '-8px', zIndex: 10 }}>
                 <tr>
-                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'transparent' }}>Module</th>
-                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'transparent' }}>Configuration</th>
-                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'transparent' }}>Comparison</th>
-                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'right', border: 'none', background: 'transparent' }}>Status</th>
+                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'var(--app-bg)', backdropFilter: 'blur(8px)', top: '-8px' }}>Module</th>
+                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'var(--app-bg)', backdropFilter: 'blur(8px)', top: '-8px' }}>Configuration</th>
+                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'left', border: 'none', background: 'var(--app-bg)', backdropFilter: 'blur(8px)', top: '-8px' }}>Comparison</th>
+                  <th style={{ padding: '0 16px', fontSize: '12px', fontWeight: '500', color: 'var(--app-text-muted)', textAlign: 'right', border: 'none', background: 'var(--app-bg)', backdropFilter: 'blur(8px)', top: '-8px' }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {comparison.map((row, idx) => (
                   <tr key={idx} style={{ 
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    boxShadow: 'inset 0 0 0 1px var(--app-border)',
+                    background: row.matchStatus === 'Mismatch' ? 'rgba(239, 68, 68, 0.15)' : row.matchStatus === 'Missing in DB' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                    boxShadow: row.matchStatus === 'Mismatch' ? 'inset 0 0 0 1px rgba(239, 68, 68, 0.5)' : row.matchStatus === 'Missing in DB' ? 'inset 0 0 0 1px rgba(245, 158, 11, 0.5)' : 'inset 0 0 0 1px var(--app-border)',
                     borderRadius: '12px'
                   }}>
                     <td style={{ padding: '16px', border: 'none', borderRadius: '12px 0 0 12px' }}>
