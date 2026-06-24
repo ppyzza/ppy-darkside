@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Papa from 'papaparse';
+import { EntityForm } from './EntityForm';
 
 function FolderNode({ name, node, pathSoFar, level, onSelect }: any) {
   const [expanded, setExpanded] = useState(false);
@@ -148,6 +149,7 @@ export default function SeedWizardPage() {
   const [columns, setColumns] = useState<any[]>([]);
   const [fetchingCols, setFetchingCols] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
+  const [fkOptions, setFkOptions] = useState<Record<string, any[]>>({});
 
   // CSV State
   const [csvFile, setCsvFile] = useState<File | null>(null);
@@ -155,6 +157,8 @@ export default function SeedWizardPage() {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [editorPage, setEditorPage] = useState(0);
   const [validationErrors, setValidationErrors] = useState<Record<number, Record<string, string>>>({});
+  const [editingRowIdx, setEditingRowIdx] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState<any>(null);
 
   // Mapping State (CSV Header -> DB Column)
   const [mapping, setMapping] = useState<Record<string, string>>({});
@@ -163,6 +167,21 @@ export default function SeedWizardPage() {
   // Export State
   const [exportedJson, setExportedJson] = useState('');
   const [exportedSql, setExportedSql] = useState('');
+
+  const [executing, setExecuting] = useState(false);
+  const [executeResult, setExecuteResult] = useState('');
+
+  // Entity Builder State
+  const [wizardMode, setWizardMode] = useState<'csv' | 'entity'>('csv');
+  const [entityDirPath, setEntityDirPath] = useState('/Users/mrppy/worklife-core-hr-service/libs/database/src/entities');
+  const [entities, setEntities] = useState<any[]>([]);
+  const [scanningEntities, setScanningEntities] = useState(false);
+  const [entityError, setEntityError] = useState('');
+  const [selectedRootEntity, setSelectedRootEntity] = useState('');
+  const [entityFormDataList, setEntityFormDataList] = useState<any[]>([]);
+  const [activeRecordIndex, setActiveRecordIndex] = useState<number | null>(null);
+  const [activeRecordData, setActiveRecordData] = useState<any>({});
+  const [scanSummary, setScanSummary] = useState<{ depth0: string[], depth1: string[], depth2plus: string[] } | null>(null);
 
   const [templates, setTemplates] = useState<{name: string, sizeKb: string}[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -173,12 +192,76 @@ export default function SeedWizardPage() {
       const res = await fetch('/api/csv-templates');
       const data = await res.json();
       if (data.success) {
-        setTemplates(data.files || []);
+        setTemplates(data.files);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoadingTemplates(false);
+    }
+  };
+
+  const calculateJoinDepths = (parsedEntities: any[]) => {
+    const depths = new Map<string, number>();
+    const processing = new Set<string>();
+
+    const getDepth = (className: string): number => {
+      if (depths.has(className)) return depths.get(className)!;
+      if (processing.has(className)) return 1;
+
+      const ent = parsedEntities.find(e => e.className === className);
+      if (!ent || !ent.relations || ent.relations.length === 0) {
+        depths.set(className, 0);
+        return 0;
+      }
+
+      processing.add(className);
+      let maxDepth = 0;
+      for (const rel of ent.relations) {
+        const d = getDepth(rel.target);
+        if (d > maxDepth) maxDepth = d;
+      }
+      processing.delete(className);
+
+      const result = maxDepth + 1;
+      depths.set(className, result);
+      return result;
+    };
+
+    const depth0: string[] = [];
+    const depth1: string[] = [];
+    const depth2plus: string[] = [];
+
+    for (const ent of parsedEntities) {
+      const d = getDepth(ent.className);
+      if (d === 0) depth0.push(ent.className);
+      else if (d === 1) depth1.push(ent.className);
+      else depth2plus.push(ent.className);
+    }
+
+    setScanSummary({ depth0, depth1, depth2plus });
+  };
+
+  const scanEntities = async () => {
+    setScanningEntities(true);
+    setEntityError('');
+    try {
+      const res = await fetch('/api/typeorm/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dirPath: entityDirPath })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEntities(data.data);
+        calculateJoinDepths(data.data);
+      } else {
+        setEntityError(data.error);
+      }
+    } catch (err: any) {
+      setEntityError(err.message);
+    } finally {
+      setScanningEntities(false);
     }
   };
 
@@ -255,6 +338,33 @@ export default function SeedWizardPage() {
       const data = await res.json();
       if (data.success) {
         setColumns(data.columns);
+        
+        // Fetch FK data
+        const newFkOptions: Record<string, any[]> = {};
+        for (const c of data.columns) {
+          if (c.foreign_key) {
+            try {
+              const fkRes = await fetch('/api/db/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  connectionString: connectionMode === 'string' ? connectionString : undefined,
+                  dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+                  schema, 
+                  table: c.foreign_key.table,
+                  limit: 500
+                })
+              });
+              const fkData = await fkRes.json();
+              if (fkData.success) {
+                newFkOptions[`${c.foreign_key.table}.${c.foreign_key.column}`] = fkData.data;
+              }
+            } catch (err) {
+              console.error('Error fetching FK data for', c.foreign_key.table, err);
+            }
+          }
+        }
+        setFkOptions(newFkOptions);
       } else {
         alert('Error fetching columns: ' + data.error);
       }
@@ -380,6 +490,63 @@ export default function SeedWizardPage() {
     });
   };
 
+  const performEntityExport = () => {
+    let sqlStatements: string[] = ['BEGIN;'];
+    
+    const generateSqlForEntity = (entityName: string, data: any, parentId?: string) => {
+      const entity = entities.find(e => e.className === entityName);
+      if (!entity) return;
+
+      const idVal = data[entity.primaryKey] || generateUuidV4();
+      const insertData: any = { ...data, [entity.primaryKey]: idVal };
+      
+      // Basic heuristic for Foreign Key mapping
+      if (parentId) {
+        // Find a column ending in Id or Uuid
+        const fkCol = entity.columns.find((c: string) => c.toLowerCase().includes('uuid') || c.toLowerCase().includes('id'));
+        if (fkCol) {
+          insertData[fkCol] = parentId;
+        }
+      }
+
+      // Collect primitive columns to insert
+      const columnsToInsert = entity.columns.filter((c: string) => insertData[c] !== undefined);
+      
+      if (columnsToInsert.length > 0) {
+        const cols = columnsToInsert.map((c: string) => `"${c}"`).join(', ');
+        const vals = columnsToInsert.map((col: string) => {
+          const val = insertData[col];
+          if (val === null || val === undefined || val === '') return 'NULL';
+          if (typeof val === 'number' || typeof val === 'boolean') return val;
+          return `'${String(val).replace(/'/g, "''")}'`;
+        }).join(', ');
+        
+        sqlStatements.push(`INSERT INTO ${schema}."${entity.tableName}" (${cols}) VALUES (${vals});`);
+      }
+
+      // Handle relations (recursive)
+      entity.relations.forEach((rel: any) => {
+        if (rel.type === 'OneToMany' && Array.isArray(data[rel.property])) {
+          data[rel.property].forEach((childData: any) => {
+            generateSqlForEntity(rel.target, childData, idVal); 
+          });
+        } else if (rel.type === 'ManyToOne' && data[rel.property]) {
+          // Simplified: Assume N:1 is inserted later, or manually ordered
+          generateSqlForEntity(rel.target, data[rel.property]);
+        }
+      });
+    };
+
+    entityFormDataList.forEach(data => {
+      generateSqlForEntity(selectedRootEntity, data);
+    });
+    sqlStatements.push('COMMIT;');
+
+    setExportedJson(JSON.stringify(entityFormDataList, null, 2));
+    setExportedSql(sqlStatements.join('\n'));
+    setStep(4);
+  };
+
   const performExport = () => {
     const result = csvData.map(row => {
       const obj: any = {};
@@ -448,6 +615,39 @@ export default function SeedWizardPage() {
     setStep(4);
   };
 
+  const handleExecuteSql = async () => {
+    if (!exportedSql || exportedSql.includes('-- No data')) {
+      alert('No SQL to execute.');
+      return;
+    }
+    setExecuting(true);
+    setExecuteResult('');
+    try {
+      const res = await fetch('/api/db/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          connectionString: connectionMode === 'string' ? connectionString : undefined,
+          dbConfig: connectionMode === 'fields' ? { ...dbConfig, port: Number(dbConfig.port) } : undefined,
+          query: exportedSql
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setExecuteResult(`✅ Success! Affected ${data.rowCount} rows.`);
+        alert('Database execution successful!');
+      } else {
+        setExecuteResult(`❌ Error: ${data.error}`);
+        alert('Execution failed: ' + data.error);
+      }
+    } catch (err: any) {
+      setExecuteResult(`❌ Error: ${err.message}`);
+      alert('Execution failed: ' + err.message);
+    } finally {
+      setExecuting(false);
+    }
+  };
+
   return (
     <div className="xp-window" style={{ height: '100%', maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
       <div className="xp-titlebar">
@@ -459,15 +659,39 @@ export default function SeedWizardPage() {
 
       <div className="xp-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0 }}>
         
+        {/* Mode Toggle */}
+        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <span style={{ fontWeight: 'bold', fontSize: '11px' }}>Wizard Mode:</span>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
+            <input type="radio" name="wizardMode" checked={wizardMode === 'csv'} onChange={() => setWizardMode('csv')} />
+            📄 CSV to Table Mode
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
+            <input type="radio" name="wizardMode" checked={wizardMode === 'entity'} onChange={() => setWizardMode('entity')} />
+            🧩 Entity Builder Mode (Multi-Table)
+          </label>
+        </div>
+
         {/* Wizard Sidebar & Content layout */}
         <div style={{ display: 'flex', flex: 1 }}>
           
           {/* Left Sidebar Steps */}
           <div style={{ width: '150px', background: '#0A246A', color: 'white', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', fontWeight: 'bold' }}>
-            <div style={{ opacity: step === 1 ? 1 : 0.5 }}>1. DB Connection</div>
-            <div style={{ opacity: step === 2 ? 1 : 0.5 }}>2. Select Data</div>
-            <div style={{ opacity: step === 3 ? 1 : 0.5 }}>3. Column Mapping</div>
-            <div style={{ opacity: step === 4 ? 1 : 0.5 }}>4. Finish & Export</div>
+            {wizardMode === 'csv' ? (
+              <>
+                <div style={{ opacity: step === 1 ? 1 : 0.5 }}>1. DB Connection</div>
+                <div style={{ opacity: step === 2 ? 1 : 0.5 }}>2. Select Data</div>
+                <div style={{ opacity: step === 3 ? 1 : 0.5 }}>3. Column Mapping</div>
+                <div style={{ opacity: step === 4 ? 1 : 0.5 }}>4. Finish & Export</div>
+              </>
+            ) : (
+              <>
+                <div style={{ opacity: step === 1 ? 1 : 0.5 }}>1. Setup & Parse</div>
+                <div style={{ opacity: step === 2 ? 1 : 0.5 }}>2. Select Entity</div>
+                <div style={{ opacity: step === 3 ? 1 : 0.5 }}>3. Build Data</div>
+                <div style={{ opacity: step === 4 ? 1 : 0.5 }}>4. Generate SQL</div>
+              </>
+            )}
           </div>
 
           {/* Right Content Area */}
@@ -475,8 +699,72 @@ export default function SeedWizardPage() {
             
             {step === 1 && (
               <div>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Connect to PostgreSQL</h3>
-                <p style={{ fontSize: '11px', marginBottom: '16px' }}>Provide connection details to introspect your Core HR database.</p>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                  {wizardMode === 'csv' ? 'Connect to PostgreSQL' : 'Database & Entity Setup'}
+                </h3>
+                <p style={{ fontSize: '11px', marginBottom: '16px' }}>
+                  {wizardMode === 'csv' 
+                    ? 'Provide connection details to introspect your Core HR database.' 
+                    : 'Configure DB and point to your TypeORM entities folder to generate the relationship graph.'}
+                </p>
+
+                {wizardMode === 'entity' && (
+                  <div style={{ marginBottom: '24px', padding: '12px', background: '#FFF', border: '1px solid #ACA899' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '4px' }}>TypeORM Entities Directory Path:</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        style={{ flex: 1, padding: '4px' }} 
+                        value={entityDirPath} 
+                        onChange={e => setEntityDirPath(e.target.value)} 
+                        placeholder="/path/to/entities" 
+                      />
+                      <button className="btn" onClick={scanEntities} disabled={scanningEntities}>
+                        {scanningEntities ? 'Scanning...' : 'Scan Entities 🔍'}
+                      </button>
+                    </div>
+                    {entityError && <div style={{ color: 'red', fontSize: '11px', marginTop: '4px' }}>{entityError}</div>}
+                    {entities.length > 0 && (
+                      <div style={{ color: 'green', fontSize: '11px', marginTop: '4px', fontWeight: 'bold' }}>
+                        ✅ Found {entities.length} entities!
+                      </div>
+                    )}
+                    
+                    {scanSummary && (
+                      <div style={{ marginTop: '16px', background: '#F0F0F0', padding: '16px', border: '1px solid #ACA899' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h4 style={{ margin: 0, fontSize: '12px' }}>Scan Summary (Join Depths)</h4>
+                          <button className="btn" style={{ fontSize: '10px' }} onClick={() => {
+                            const md = `### Entity Join Depths\n\n**0 Joins (Standalone):**\n${scanSummary.depth0.map(x => `- ${x}`).join('\n')}\n\n**1 Join:**\n${scanSummary.depth1.map(x => `- ${x}`).join('\n')}\n\n**2+ Joins (Complex):**\n${scanSummary.depth2plus.map(x => `- ${x}`).join('\n')}\n`;
+                            navigator.clipboard.writeText(md);
+                            alert('Copied to clipboard!');
+                          }}>📋 Copy as Markdown</button>
+                        </div>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginTop: '12px' }}>
+                          <div>
+                            <strong style={{ fontSize: '11px', color: '#006600' }}>0 Joins ({scanSummary.depth0.length})</strong>
+                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
+                              {scanSummary.depth0.map(x => <div key={x}>{x}</div>)}
+                            </div>
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: '11px', color: '#B8860B' }}>1 Join ({scanSummary.depth1.length})</strong>
+                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
+                              {scanSummary.depth1.map(x => <div key={x}>{x}</div>)}
+                            </div>
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: '11px', color: '#CC0000' }}>2+ Joins ({scanSummary.depth2plus.length})</strong>
+                            <div style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', background: '#FFF', padding: '4px', border: '1px solid #CCC' }}>
+                              {scanSummary.depth2plus.map(x => <div key={x}>{x}</div>)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 
                 <div style={{ marginBottom: '16px', display: 'flex', gap: '16px' }}>
                   <label style={{ fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -537,8 +825,8 @@ export default function SeedWizardPage() {
                 {dbError && <div style={{ color: 'red', fontWeight: 'bold', marginBottom: '16px' }}>Error: {dbError}</div>}
 
                 <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
-                  <button className="btn btn-primary" onClick={handleConnect} disabled={connecting}>
-                    {connecting ? 'Connecting...' : 'Next >'}
+                  <button className="btn btn-primary" onClick={handleConnect} disabled={connecting || (wizardMode === 'entity' && entities.length === 0)}>
+                    Next {'>'}
                   </button>
                 </div>
               </div>
@@ -546,8 +834,67 @@ export default function SeedWizardPage() {
 
             {step === 2 && (
               <div>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Select Table & Upload Data</h3>
-                
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                  {wizardMode === 'csv' ? 'Select Table & Upload Data' : 'Select Root Entity'}
+                </h3>
+
+                {wizardMode === 'entity' ? (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '4px' }}>Target Root Entity:</label>
+                    <select 
+                      style={{ width: '100%' }} 
+                      value={selectedRootEntity} 
+                      onChange={(e) => {
+                        setSelectedRootEntity(e.target.value);
+                        // Also auto-select the table if matched
+                        const ent = entities.find(x => x.className === e.target.value);
+                        if (ent && ent.tableName) {
+                          setSelectedTable(ent.tableName);
+                          fetchColumnsForTable(ent.tableName);
+                        }
+                      }}
+                    >
+                      <option value="">-- Select Root Entity --</option>
+                      {scanSummary ? (
+                        <>
+                          <optgroup label="0 Joins (Standalone)">
+                            {scanSummary.depth0.map(className => {
+                              const e = entities.find(x => x.className === className);
+                              return e ? <option key={e.className} value={e.className}>{e.className} ({e.tableName})</option> : null;
+                            })}
+                          </optgroup>
+                          <optgroup label="1 Join">
+                            {scanSummary.depth1.map(className => {
+                              const e = entities.find(x => x.className === className);
+                              return e ? <option key={e.className} value={e.className}>{e.className} ({e.tableName})</option> : null;
+                            })}
+                          </optgroup>
+                          <optgroup label="2+ Joins (Complex)">
+                            {scanSummary.depth2plus.map(className => {
+                              const e = entities.find(x => x.className === className);
+                              return e ? <option key={e.className} value={e.className}>{e.className} ({e.tableName})</option> : null;
+                            })}
+                          </optgroup>
+                        </>
+                      ) : (
+                        entities.map(e => <option key={e.className} value={e.className}>{e.className} ({e.tableName})</option>)
+                      )}
+                    </select>
+
+                    <div className="flex justify-end border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', marginTop: '24px' }}>
+                      <button className="btn" onClick={() => setStep(1)}>{'< Back'}</button>
+                      <button className="btn btn-primary" onClick={() => {
+                        setEntityFormDataList([]);
+                        setActiveRecordIndex(null);
+                        setActiveRecordData({});
+                        setStep(3);
+                      }} disabled={!selectedRootEntity}>
+                        Next {'>'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
                 <div style={{ marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Target Database Table:</label>
@@ -668,6 +1015,7 @@ export default function SeedWizardPage() {
                         <thead style={{ background: '#EBEBEB', position: 'sticky', top: 0, zIndex: 1 }}>
                           <tr>
                             <th style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>#</th>
+                            <th style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>Actions</th>
                             {csvHeaders.map(h => (
                               <th key={h} style={{ border: '1px solid #ACA899', padding: '4px', background: '#D4D0C8' }}>{h}</th>
                             ))}
@@ -679,6 +1027,15 @@ export default function SeedWizardPage() {
                             return (
                               <tr key={rIdx}>
                                 <td style={{ border: '1px solid #ACA899', padding: '4px', background: '#EBEBEB', textAlign: 'center', color: '#666' }}>{rIdx + 1}</td>
+                                <td style={{ border: '1px solid #ACA899', padding: '4px', background: '#EBEBEB', textAlign: 'center' }}>
+                                  <button 
+                                    className="btn" 
+                                    onClick={() => { setEditingRowIdx(rIdx); setEditFormData({...row}); }} 
+                                    style={{ fontSize: '10px', padding: '2px 4px' }}
+                                  >
+                                    ✏️ Edit
+                                  </button>
+                                </td>
                                 {csvHeaders.map(h => {
                                   let dbCol = columns.find(c => c.column_name === h || c.column_name === h.toLowerCase());
                                   if (!dbCol) {
@@ -686,9 +1043,13 @@ export default function SeedWizardPage() {
                                     dbCol = columns.find(c => c.column_name === snake);
                                   }
                                   const isEnum = dbCol && dbCol.enum_values && Array.isArray(dbCol.enum_values) && dbCol.enum_values.length > 0;
+                                  const fkKey = dbCol && dbCol.foreign_key ? `${dbCol.foreign_key.table}.${dbCol.foreign_key.column}` : '';
+                                  const fkOptionsList = fkKey ? fkOptions[fkKey] : null;
 
                                   const isUuidCol = dbCol && (dbCol.data_type === 'uuid' || dbCol.column_name.toLowerCase().includes('uuid'));
                                   const isInvalidUuid = isUuidCol && row[h] && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(row[h].trim());
+
+                                  const isBoolean = dbCol && dbCol.data_type === 'boolean';
 
                                   const fkError = validationErrors[rIdx]?.[h];
                                   const hasError = isInvalidUuid || !!fkError;
@@ -720,6 +1081,71 @@ export default function SeedWizardPage() {
                                             <option key={ev} value={ev}>{ev}</option>
                                           ))}
                                         </select>
+                                      ) : fkOptionsList ? (
+                                        <select 
+                                          value={row[h] || ''} 
+                                          title={errorMessage}
+                                          onChange={(e) => {
+                                            const newData = [...csvData];
+                                            newData[rIdx] = { ...newData[rIdx], [h]: e.target.value };
+                                            setCsvData(newData);
+                                            // clear error on change
+                                            if (validationErrors[rIdx]?.[h]) {
+                                              setValidationErrors(prev => {
+                                                const rowErrs = { ...prev[rIdx] };
+                                                delete rowErrs[h];
+                                                return { ...prev, [rIdx]: rowErrs };
+                                              });
+                                            }
+                                          }}
+                                          style={{ 
+                                            width: '100%', 
+                                            minWidth: '80px',
+                                            border: 'none', 
+                                            padding: '4px', 
+                                            fontSize: '11px',
+                                            background: hasError ? '#FFEEEE' : '#E5F5E5',
+                                            color: '#000',
+                                            outline: hasError ? '1px solid red' : 'none',
+                                            cursor: 'pointer'
+                                          }}
+                                        >
+                                          <option value="">-- Select {dbCol.foreign_key.table} --</option>
+                                          {fkOptionsList.map((opt, i) => {
+                                            const displayKey = Object.keys(opt).find(k => ['name', 'title', 'description', 'email'].includes(k.toLowerCase())) || dbCol.foreign_key.column;
+                                            const displayVal = opt[displayKey];
+                                            const isDifferent = displayKey !== dbCol.foreign_key.column && displayVal;
+                                            return (
+                                              <option key={i} value={opt[dbCol.foreign_key.column]}>
+                                                {opt[dbCol.foreign_key.column]} {isDifferent ? `- ${displayVal}` : ''}
+                                              </option>
+                                            )
+                                          })}
+                                        </select>
+                                      ) : isBoolean ? (
+                                        <select 
+                                          value={row[h] === true ? 'true' : row[h] === false ? 'false' : row[h] || ''} 
+                                          onChange={(e) => {
+                                            const newData = [...csvData];
+                                            newData[rIdx] = { ...newData[rIdx], [h]: e.target.value };
+                                            setCsvData(newData);
+                                          }}
+                                          style={{ 
+                                            width: '100%', 
+                                            minWidth: '80px',
+                                            border: 'none', 
+                                            padding: '4px', 
+                                            fontSize: '11px',
+                                            background: '#E5F5E5',
+                                            color: '#000',
+                                            outline: 'none',
+                                            cursor: 'pointer'
+                                          }}
+                                        >
+                                          <option value="">-- Select --</option>
+                                          <option value="true">True</option>
+                                          <option value="false">False</option>
+                                        </select>
                                       ) : (
                                         <input 
                                           type="text" 
@@ -745,12 +1171,12 @@ export default function SeedWizardPage() {
                                             padding: '4px', 
                                             fontSize: '11px',
                                             background: hasError ? '#FFEEEE' : 'transparent',
-                                            color: hasError ? 'red' : 'inherit',
+                                            color: hasError ? 'red' : '#000',
                                             outline: hasError ? '1px solid red' : 'none'
                                           }}
-                                          onFocus={e => { if(!hasError) e.target.style.background = '#FFFFE1' }}
+                                          onFocus={e => { if(!hasError) { e.target.style.background = '#FFFFE1'; e.target.style.color = '#000'; } }}
                                           onBlur={async (e) => {
-                                            if (!hasError) e.target.style.background = 'transparent';
+                                            if (!hasError) { e.target.style.background = 'transparent'; }
                                             
                                             // FK Validation
                                             if (dbCol && dbCol.foreign_key && e.target.value && !isInvalidUuid) {
@@ -803,12 +1229,195 @@ export default function SeedWizardPage() {
                     Next {'>'}
                   </button>
                 </div>
+
+                {/* Edit Modal */}
+                {editingRowIdx !== null && editFormData && (
+                  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+                    <div className="xp-window" style={{ width: '400px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+                      <div className="xp-titlebar">
+                        <span>Edit Record #{editingRowIdx + 1}</span>
+                        <div className="xp-titlebar-buttons">
+                          <div className="xp-titlebar-btn" onClick={() => setEditingRowIdx(null)}>X</div>
+                        </div>
+                      </div>
+                      <div className="xp-content" style={{ overflow: 'auto', background: '#ECE9D8', flex: 1, padding: '16px' }}>
+                        <div style={{ display: 'grid', gap: '8px' }}>
+                          {csvHeaders.map(h => {
+                            let dbCol = columns.find(c => c.column_name === h || c.column_name === h.toLowerCase());
+                            if (!dbCol) {
+                              const snake = h.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+                              dbCol = columns.find(c => c.column_name === snake);
+                            }
+                            const isEnum = dbCol && dbCol.enum_values && Array.isArray(dbCol.enum_values) && dbCol.enum_values.length > 0;
+                            const fkKey = dbCol && dbCol.foreign_key ? `${dbCol.foreign_key.table}.${dbCol.foreign_key.column}` : '';
+                            const fkOptionsList = fkKey ? fkOptions[fkKey] : null;
+                            const isBoolean = dbCol && dbCol.data_type === 'boolean';
+
+                            return (
+                              <div key={h}>
+                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', marginBottom: '2px' }}>{h}</label>
+                                {isEnum ? (
+                                  <select 
+                                    value={editFormData[h] || ''} 
+                                    onChange={(e) => setEditFormData({...editFormData, [h]: e.target.value})}
+                                    style={{ width: '100%', padding: '4px', fontSize: '11px' }}
+                                  >
+                                    <option value="">-- Select Enum --</option>
+                                    {dbCol.enum_values.map((ev: string) => <option key={ev} value={ev}>{ev}</option>)}
+                                  </select>
+                                ) : fkOptionsList ? (
+                                  <select 
+                                    value={editFormData[h] || ''} 
+                                    onChange={(e) => setEditFormData({...editFormData, [h]: e.target.value})}
+                                    style={{ width: '100%', padding: '4px', fontSize: '11px' }}
+                                  >
+                                    <option value="">-- Select {dbCol.foreign_key.table} --</option>
+                                    {fkOptionsList.map((opt, i) => {
+                                      const displayKey = Object.keys(opt).find(k => ['name', 'title', 'description', 'email'].includes(k.toLowerCase())) || dbCol.foreign_key.column;
+                                      const displayVal = opt[displayKey];
+                                      const isDifferent = displayKey !== dbCol.foreign_key.column && displayVal;
+                                      return (
+                                        <option key={i} value={opt[dbCol.foreign_key.column]}>
+                                          {opt[dbCol.foreign_key.column]} {isDifferent ? `- ${displayVal}` : ''}
+                                        </option>
+                                      )
+                                    })}
+                                  </select>
+                                ) : isBoolean ? (
+                                  <select 
+                                    value={editFormData[h] === true ? 'true' : editFormData[h] === false ? 'false' : editFormData[h] || ''} 
+                                    onChange={(e) => setEditFormData({...editFormData, [h]: e.target.value})}
+                                    style={{ width: '100%', padding: '4px', fontSize: '11px' }}
+                                  >
+                                    <option value="">-- Select --</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                  </select>
+                                ) : (
+                                  <input 
+                                    type="text" 
+                                    value={editFormData[h] || ''} 
+                                    onChange={(e) => setEditFormData({...editFormData, [h]: e.target.value})}
+                                    style={{ width: '100%', padding: '4px', fontSize: '11px', border: '1px solid #ACA899' }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                          <button className="btn" onClick={() => setEditingRowIdx(null)}>Cancel</button>
+                          <button className="btn btn-primary" onClick={() => {
+                            const newData = [...csvData];
+                            newData[editingRowIdx] = editFormData;
+                            setCsvData(newData);
+                            setEditingRowIdx(null);
+                          }}>Save</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                  </>
+                )}
               </div>
             )}
 
-            {step === 3 && (
+{step === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>Map Columns</h3>
+                <h3 style={{ marginTop: 0, borderBottom: '1px solid #ACA899', paddingBottom: '8px' }}>
+                  {wizardMode === 'csv' ? 'Map Columns' : 'Build Entity Data'}
+                </h3>
+                
+                {wizardMode === 'entity' ? (
+                  <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                    <p style={{ fontSize: '11px', marginBottom: '16px' }}>Configure <b>{selectedRootEntity}</b> records.</p>
+                    
+                    <div style={{ display: 'flex', gap: '16px', flex: 1, overflow: 'hidden' }}>
+                      {/* Left: List of saved records */}
+                      <div style={{ width: '250px', background: '#FFF', border: '1px solid #ACA899', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <strong>Saved Records ({entityFormDataList.length})</strong>
+                          <button className="btn" style={{ fontSize: '10px' }} onClick={() => {
+                            setActiveRecordIndex(null);
+                            setActiveRecordData({});
+                          }}>+ New</button>
+                        </div>
+                        <div style={{ flex: 1, overflow: 'auto', padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          {entityFormDataList.map((data, idx) => (
+                            <div 
+                              key={idx} 
+                              style={{ 
+                                padding: '8px', 
+                                border: '1px solid #CCC', 
+                                cursor: 'pointer',
+                                background: activeRecordIndex === idx ? '#E0EEF9' : '#FFF',
+                                fontSize: '11px'
+                              }}
+                              onClick={() => {
+                                setActiveRecordIndex(idx);
+                                setActiveRecordData(data);
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <strong>Record #{idx + 1}</strong>
+                                <span style={{ color: 'red', fontWeight: 'bold' }} onClick={(e) => {
+                                  e.stopPropagation();
+                                  const arr = [...entityFormDataList];
+                                  arr.splice(idx, 1);
+                                  setEntityFormDataList(arr);
+                                  if (activeRecordIndex === idx) {
+                                    setActiveRecordIndex(null);
+                                    setActiveRecordData({});
+                                  } else if (activeRecordIndex !== null && activeRecordIndex > idx) {
+                                    setActiveRecordIndex(activeRecordIndex - 1);
+                                  }
+                                }}>X</span>
+                              </div>
+                            </div>
+                          ))}
+                          {entityFormDataList.length === 0 && (
+                            <div style={{ color: '#888', fontSize: '10px', textAlign: 'center', marginTop: '16px' }}>No records yet.</div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right: Active Form */}
+                      <div style={{ flex: 1, background: '#FFF', border: '1px solid #ACA899', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <strong>{activeRecordIndex !== null ? `Editing Record #${activeRecordIndex + 1}` : 'New Record'}</strong>
+                          <button className="btn btn-primary" style={{ fontSize: '10px' }} onClick={() => {
+                            if (activeRecordIndex !== null) {
+                              const arr = [...entityFormDataList];
+                              arr[activeRecordIndex] = activeRecordData;
+                              setEntityFormDataList(arr);
+                            } else {
+                              setEntityFormDataList([...entityFormDataList, activeRecordData]);
+                            }
+                            setActiveRecordIndex(null);
+                            setActiveRecordData({});
+                          }}>💾 Save to List</button>
+                        </div>
+                        <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+                          <EntityForm 
+                            entityName={selectedRootEntity} 
+                            entities={entities} 
+                            formData={activeRecordData} 
+                            onChange={setActiveRecordData} 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', marginTop: '16px' }}>
+                      <button className="btn" onClick={() => setStep(2)}>{'< Back'}</button>
+                      <button className="btn btn-primary" onClick={performEntityExport} disabled={entityFormDataList.length === 0}>
+                        Generate SQL {'>'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
                 <p style={{ fontSize: '11px' }}>Table: <b>{selectedTable}</b>. We auto-mapped columns where possible.</p>
                 
                 <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF', border: '1px solid #ACA899', marginBottom: '16px' }}>
@@ -863,6 +1472,8 @@ export default function SeedWizardPage() {
                     Generate Seed {'>'}
                   </button>
                 </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -877,7 +1488,20 @@ export default function SeedWizardPage() {
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                       <span>JSON Data</span>
-                      <button onClick={() => { navigator.clipboard.writeText(exportedJson); alert('JSON Copied!'); }} style={{ fontSize: '10px', cursor: 'pointer' }}>📋 Copy</button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => { navigator.clipboard.writeText(exportedJson); alert('JSON Copied!'); }} style={{ fontSize: '10px', cursor: 'pointer' }}>📋 Copy</button>
+                        <button onClick={() => {
+                          const blob = new Blob([exportedJson], { type: 'application/json' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${selectedTable || 'data'}_seed.json`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+                        }} style={{ fontSize: '10px', cursor: 'pointer' }}>💾 Download</button>
+                      </div>
                     </div>
                     <textarea 
                       value={exportedJson} 
@@ -890,7 +1514,20 @@ export default function SeedWizardPage() {
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                       <span>SQL INSERT Statements</span>
-                      <button onClick={() => { navigator.clipboard.writeText(exportedSql); alert('SQL Copied!'); }} style={{ fontSize: '10px', cursor: 'pointer' }}>📋 Copy</button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => { navigator.clipboard.writeText(exportedSql); alert('SQL Copied!'); }} style={{ fontSize: '10px', cursor: 'pointer' }}>📋 Copy</button>
+                        <button onClick={() => {
+                          const blob = new Blob([exportedSql], { type: 'text/sql' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${selectedTable || 'data'}_seed.sql`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+                        }} style={{ fontSize: '10px', cursor: 'pointer' }}>💾 Download</button>
+                      </div>
                     </div>
                     <textarea 
                       value={exportedSql} 
@@ -901,8 +1538,14 @@ export default function SeedWizardPage() {
 
                 </div>
 
-                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899' }}>
+                <div className="flex justify-between border-t" style={{ paddingTop: '16px', borderTop: '1px solid #ACA899', alignItems: 'center' }}>
                   <button className="btn" onClick={() => setStep(3)}>{'< Back'}</button>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    {executeResult && <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{executeResult}</span>}
+                    <button className="btn btn-primary" onClick={handleExecuteSql} disabled={executing}>
+                      {executing ? 'Executing...' : 'Execute SQL to Database 🚀'}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
