@@ -112,6 +112,53 @@ export async function POST(req: Request) {
       }
     }
 
+    // Infer implicit relations based on naming conventions
+    for (const ent of entities) {
+      // 1. Transaction entities usually depend on their base entity via 'uuid'
+      if (ent.className.endsWith('TransactionEntity')) {
+        const baseName = ent.className.slice(0, -17); // Remove 'TransactionEntity'
+        const targetClassName = baseName + 'Entity';
+        if (entities.some(e => e.className === targetClassName)) {
+          if (!ent.relations.some((r: any) => r.target === targetClassName)) {
+            ent.relations.push({
+              type: 'ImplicitTransaction',
+              target: targetClassName,
+              property: 'uuid'
+            });
+          }
+        }
+      }
+
+      // 2. Columns named [entityName]Uuid or [entityName]Id
+      for (const col of ent.columns) {
+        if (col.endsWith('Uuid') && col !== 'uuid') {
+          const baseName = col.slice(0, -4);
+          const targetClassName = baseName.charAt(0).toUpperCase() + baseName.slice(1) + 'Entity';
+          if (entities.some(e => e.className === targetClassName)) {
+            if (!ent.relations.some((r: any) => r.target === targetClassName)) {
+              ent.relations.push({
+                type: 'ImplicitForeignKey',
+                target: targetClassName,
+                property: col
+              });
+            }
+          }
+        } else if (col.endsWith('Id') && col !== 'id') {
+          const baseName = col.slice(0, -2);
+          const targetClassName = baseName.charAt(0).toUpperCase() + baseName.slice(1) + 'Entity';
+          if (entities.some(e => e.className === targetClassName)) {
+            if (!ent.relations.some((r: any) => r.target === targetClassName)) {
+              ent.relations.push({
+                type: 'ImplicitForeignKey',
+                target: targetClassName,
+                property: col
+              });
+            }
+          }
+        }
+      }
+    }
+
     return NextResponse.json({ success: true, data: entities });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
