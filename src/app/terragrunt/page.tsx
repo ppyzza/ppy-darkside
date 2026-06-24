@@ -167,15 +167,15 @@ export default function TerragruntPage() {
   const pendingEditsCount = Object.keys(edits).length;
 
   return (
-    <div className="xp-window" style={{ height: '100%', maxWidth: '1600px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ height: '100%', maxWidth: '1600px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <div className="app-titlebar">
         <span>Terragrunt File Browser & Compare 🌍</span>
-        <div className="xp-titlebar-buttons">
-          <div className="xp-titlebar-btn">X</div>
+        <div className="app-titlebar-buttons">
+          <div className="app-titlebar-btn">X</div>
         </div>
       </div>
 
-      <div className="xp-content" style={{ display: 'flex', flex: 1, padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="app-content" style={{ display: 'flex', flex: 1, padding: 0, overflow: 'hidden', position: 'relative' }}>
         
         {/* Left Panel: File Browser */}
         {sidebarOpen && (

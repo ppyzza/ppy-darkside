@@ -1,5 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 export const metadata = {
   title: 'LocalStack OS',
@@ -8,15 +10,16 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        
+        <ThemeProvider>
+
         {/* Top Header */}
         <header style={{ 
-          background: 'linear-gradient(to bottom, #0058e6, #3a93ff)', 
-          color: 'white', 
+          background: 'linear-gradient(to bottom, var(--app-title-gradient-start), var(--app-title-gradient-end))', 
+          color: 'var(--app-title-text)', 
           padding: '8px 12px',
-          borderBottom: '1px solid #000',
+          borderBottom: '1px solid var(--app-border)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -27,8 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span style={{ fontSize: '16px', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>LocalStack OS</span>
             <span style={{ fontSize: '11px', backgroundColor: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '3px' }}>Build 1.0 Beta</span>
           </div>
-          <div style={{ fontSize: '11px', display: 'flex', gap: '16px' }}>
+          <div style={{ fontSize: '11px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <span>Environment: Local Development</span>
+            <ThemeSelector />
           </div>
         </header>
 
@@ -37,11 +41,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           {/* Sidebar */}
           <aside style={{ width: '220px', display: 'flex', flexDirection: 'column' }} className="window-panel">
-            <div style={{ background: '#0A246A', color: 'white', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+            <div style={{ background: 'var(--app-blue-dark)', color: 'white', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', borderRadius: 'var(--app-title-radius)', borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
               Dashboard
             </div>
             
-            <div style={{ flex: 1, padding: '8px', background: '#FFFFFF', border: '1px solid #7F9DB9', overflowY: 'auto' }}>
+            <div style={{ flex: 1, padding: '8px', background: 'var(--app-window-bg)', border: '1px solid var(--app-border)', borderTop: 'none', overflowY: 'auto' }}>
               
               <div style={{ marginBottom: '12px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '11px', marginBottom: '4px' }}>[-] Storage</div>
@@ -112,24 +116,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Status Bar */}
         <footer style={{ 
-          background: 'var(--xp-bg)', 
-          borderTop: '1px solid #FFFFFF', 
-          boxShadow: 'inset 0 1px 0 #ACA899, 0 -1px 0 #7F9DB9',
-          padding: '2px 8px',
+          background: 'var(--app-bg)', 
+          borderTop: '1px solid var(--app-border)', 
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), 0 -1px 0 var(--app-border)',
+          padding: '4px 12px',
           display: 'flex',
           fontSize: '11px',
           gap: '16px',
           alignItems: 'center',
-          color: '#000'
+          color: 'var(--app-text)'
         }}>
-          <div style={{ flex: 1, borderRight: '1px solid #ACA899', paddingRight: '8px', boxShadow: '1px 0 0 #FFFFFF' }}>Ready</div>
-          <div style={{ display: 'flex', gap: '12px', borderRight: '1px solid #ACA899', paddingRight: '8px', boxShadow: '1px 0 0 #FFFFFF' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: 8, height: 8, background: 'var(--xp-success)', borderRadius: '50%' }}></div> S3 Online</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: 8, height: 8, background: 'var(--xp-success)', borderRadius: '50%' }}></div> SQS Online</span>
+          <div style={{ flex: 1, borderRight: '1px solid var(--app-border)', paddingRight: '8px' }}>Ready</div>
+          <div style={{ display: 'flex', gap: '12px', borderRight: '1px solid var(--app-border)', paddingRight: '8px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: 8, height: 8, background: 'var(--app-success)', borderRadius: '50%' }}></div> S3 Online</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: 8, height: 8, background: 'var(--app-success)', borderRadius: '50%' }}></div> SQS Online</span>
           </div>
           <div>Connected: localhost:4566</div>
         </footer>
 
+        </ThemeProvider>
       </body>
     </html>
   );

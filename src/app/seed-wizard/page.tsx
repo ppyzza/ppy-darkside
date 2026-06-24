@@ -646,15 +646,15 @@ export default function SeedWizardPage() {
   };
 
   return (
-    <div className="xp-window" style={{ height: '100%', maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ height: '100%', maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <div className="app-titlebar">
         <span>CSV to Seed Wizard 🪄</span>
-        <div className="xp-titlebar-buttons">
-          <div className="xp-titlebar-btn">X</div>
+        <div className="app-titlebar-buttons">
+          <div className="app-titlebar-btn">X</div>
         </div>
       </div>
 
-      <div className="xp-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0 }}>
+      <div className="app-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0 }}>
         
         {/* Mode Toggle */}
         <div style={{ padding: '8px', borderBottom: '1px solid #ACA899', background: '#ECE9D8', display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -1235,14 +1235,14 @@ export default function SeedWizardPage() {
                 {/* Edit Modal */}
                 {editingRowIdx !== null && editFormData && (
                   <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-                    <div className="xp-window" style={{ width: '400px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-                      <div className="xp-titlebar">
+                    <div className="app-window" style={{ width: '400px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+                      <div className="app-titlebar">
                         <span>Edit Record #{editingRowIdx + 1}</span>
-                        <div className="xp-titlebar-buttons">
-                          <div className="xp-titlebar-btn" onClick={() => setEditingRowIdx(null)}>X</div>
+                        <div className="app-titlebar-buttons">
+                          <div className="app-titlebar-btn" onClick={() => setEditingRowIdx(null)}>X</div>
                         </div>
                       </div>
-                      <div className="xp-content" style={{ overflow: 'auto', background: '#ECE9D8', flex: 1, padding: '16px' }}>
+                      <div className="app-content" style={{ overflow: 'auto', background: '#ECE9D8', flex: 1, padding: '16px' }}>
                         <div style={{ display: 'grid', gap: '8px' }}>
                           {csvHeaders.map(h => {
                             let dbCol = columns.find(c => c.column_name === h || c.column_name === h.toLowerCase());

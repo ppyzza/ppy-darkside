@@ -114,15 +114,15 @@ export default function UtilitiesPage() {
   const tabs = ['JWT Decoder', 'JSON Tools', 'Time Converter', 'String Tools'];
 
   return (
-    <div className="xp-window" style={{ height: '100%', maxWidth: '800px', margin: '0 auto' }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ height: '100%', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="app-titlebar">
         <span>Developer PowerToys</span>
-        <div className="xp-titlebar-buttons">
-          <div className="xp-titlebar-btn">X</div>
+        <div className="app-titlebar-buttons">
+          <div className="app-titlebar-btn">X</div>
         </div>
       </div>
       
-      <div className="xp-content" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="app-content" style={{ display: 'flex', flexDirection: 'column' }}>
         
         {/* Tab Header */}
         <div style={{ display: 'flex', borderBottom: '1px solid #ACA899', marginBottom: '12px' }}>

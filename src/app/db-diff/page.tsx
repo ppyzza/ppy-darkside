@@ -299,15 +299,15 @@ export default function DbDiffPage() {
   }
 
   return (
-    <div className="xp-window" style={{ height: '100%', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ height: '100%', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <div className="app-titlebar">
         <span>Database Diff Wizard ⚖️</span>
-        <div className="xp-titlebar-buttons">
-          <div className="xp-titlebar-btn">X</div>
+        <div className="app-titlebar-buttons">
+          <div className="app-titlebar-btn">X</div>
         </div>
       </div>
 
-      <div className="xp-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0, overflow: 'hidden' }}>
+      <div className="app-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px', background: '#ECE9D8', borderBottom: '1px solid #ACA899' }}>
           <h3 style={{ marginTop: 0 }}>Select Databases to Compare</h3>
           <div style={{ display: 'flex', gap: '16px' }}>

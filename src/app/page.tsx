@@ -264,15 +264,15 @@ export default function S3Page() {
   const breadcrumbs = currentPrefix.split('/').filter(p => p);
 
   return (
-    <div className="xp-window" style={{ height: '100%' }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ height: '100%' }}>
+      <div className="app-titlebar">
         <span>S3 Explorer {selectedBucket ? `- ${selectedBucket}` : ''}</span>
-        <div className="xp-titlebar-buttons">
-          <div className="xp-titlebar-btn">X</div>
+        <div className="app-titlebar-buttons">
+          <div className="app-titlebar-btn">X</div>
         </div>
       </div>
       
-      <div className="xp-content flex-col" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="app-content flex-col" style={{ display: 'flex', flexDirection: 'column' }}>
         
         {/* Toolbar */}
         <div style={{ display: 'flex', gap: '8px', paddingBottom: '8px', borderBottom: '1px solid #ACA899', marginBottom: '8px' }}>
@@ -434,9 +434,9 @@ export default function S3Page() {
       
       {showBucketModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="xp-window" style={{ width: '300px' }}>
-            <div className="xp-titlebar"><span>Create Bucket</span><div className="xp-titlebar-buttons"><div className="xp-titlebar-btn" onClick={() => { setShowBucketModal(false); setNewBucketName(''); }}>X</div></div></div>
-            <div className="xp-content">
+          <div className="app-window" style={{ width: '300px' }}>
+            <div className="app-titlebar"><span>Create Bucket</span><div className="app-titlebar-buttons"><div className="app-titlebar-btn" onClick={() => { setShowBucketModal(false); setNewBucketName(''); }}>X</div></div></div>
+            <div className="app-content">
               <div style={{ marginBottom: '8px', fontSize: '11px' }}>Bucket Name:</div>
               <input type="text" style={{ width: '100%', marginBottom: '16px' }} value={newBucketName} onChange={e => setNewBucketName(e.target.value)} autoFocus />
               <div className="flex justify-end gap-2">
@@ -450,9 +450,9 @@ export default function S3Page() {
 
       {showFolderModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="xp-window" style={{ width: '300px' }}>
-            <div className="xp-titlebar"><span>Create Folder</span><div className="xp-titlebar-buttons"><div className="xp-titlebar-btn" onClick={() => { setShowFolderModal(false); setNewFolderName(''); }}>X</div></div></div>
-            <div className="xp-content">
+          <div className="app-window" style={{ width: '300px' }}>
+            <div className="app-titlebar"><span>Create Folder</span><div className="app-titlebar-buttons"><div className="app-titlebar-btn" onClick={() => { setShowFolderModal(false); setNewFolderName(''); }}>X</div></div></div>
+            <div className="app-content">
               <div style={{ marginBottom: '8px', fontSize: '11px' }}>Folder Name:</div>
               <input type="text" style={{ width: '100%', marginBottom: '16px' }} value={newFolderName} onChange={e => setNewFolderName(e.target.value)} autoFocus />
               <div className="flex justify-end gap-2">
@@ -466,9 +466,9 @@ export default function S3Page() {
 
       {changingClassFor && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="xp-window" style={{ width: '300px' }}>
-            <div className="xp-titlebar"><span>Properties</span><div className="xp-titlebar-buttons"><div className="xp-titlebar-btn" onClick={() => setChangingClassFor(null)}>X</div></div></div>
-            <div className="xp-content">
+          <div className="app-window" style={{ width: '300px' }}>
+            <div className="app-titlebar"><span>Properties</span><div className="app-titlebar-buttons"><div className="app-titlebar-btn" onClick={() => setChangingClassFor(null)}>X</div></div></div>
+            <div className="app-content">
               <div style={{ marginBottom: '4px', fontSize: '11px' }}>File: {changingClassFor.key}</div>
               <div style={{ marginBottom: '8px', fontSize: '11px' }}>Storage Class:</div>
               <select style={{ width: '100%', marginBottom: '16px' }} value={newStorageClass} onChange={e => setNewStorageClass(e.target.value)}>

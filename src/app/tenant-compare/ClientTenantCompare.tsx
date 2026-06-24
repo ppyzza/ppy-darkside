@@ -76,16 +76,16 @@ export default function ClientTenantCompare({
   const finalError = errorMsg || clientError;
 
   return (
-    <div className="xp-window" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <div className="xp-titlebar">
+    <div className="app-window" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+      <div className="app-titlebar">
         <span>🏢 Tenant Config Checker ({schema})</span>
-        <div className="xp-titlebar-buttons">
-          <button className="xp-titlebar-btn" style={{ fontSize: '10px' }}>_</button>
-          <button className="xp-titlebar-btn" style={{ fontSize: '10px' }}>□</button>
-          <button className="xp-titlebar-btn">×</button>
+        <div className="app-titlebar-buttons">
+          <button className="app-titlebar-btn" style={{ fontSize: '10px' }}>_</button>
+          <button className="app-titlebar-btn" style={{ fontSize: '10px' }}>□</button>
+          <button className="app-titlebar-btn">×</button>
         </div>
       </div>
-      <div className="xp-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
+      <div className="app-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
         
         {finalError && (
           <div style={{ background: '#FFEBEB', border: '1px solid #CC0000', padding: '8px', color: '#CC0000', flexShrink: 0 }}>
