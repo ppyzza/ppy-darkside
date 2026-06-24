@@ -14,14 +14,19 @@ export default async function ConfigComparePage({ searchParams }: { searchParams
 
   try {
     // 1. Connect to DB
-    const client = new Client({
+    const clientConfig: any = {
       host: process.env.DB_HOST,
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-      ssl: { rejectUnauthorized: false }
-    });
+    };
+
+    if (process.env.DB_SSL === 'true') {
+      clientConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    const client = new Client(clientConfig);
     
     await client.connect();
 
