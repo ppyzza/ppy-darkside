@@ -88,8 +88,7 @@ export async function POST(req: Request) {
                   }
                 }
                 
-                // Only push ManyToOne and OneToMany for the builder POC
-                if (name === 'ManyToOne' || name === 'OneToMany') {
+                if (name === 'ManyToOne' || name === 'OneToMany' || name === 'OneToOne' || name === 'ManyToMany') {
                   relations.push({
                     type: name,
                     target,
